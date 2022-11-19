@@ -48,5 +48,8 @@ export const blogsRepository = {       //объект с методами упр
         else {
             return false;
         }
+    },
+    allBlogsDelete() {
+        blogsRepositoryDb.blogs = [];
     }
 }

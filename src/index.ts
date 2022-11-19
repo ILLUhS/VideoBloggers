@@ -7,3 +7,7 @@ const jsonBody = express.json();
 app.use(jsonBody);
 
 app.use('/blogs', blogsRouter);
+
+app.listen(port, () => {
+    console.log(`app listening on port ${port}`)
+})

@@ -17,4 +17,7 @@ export const errorsValidation = (req: Request, res: Response, next: NextFunction
     if(!errorsMessages.isEmpty()){
         res.status(400).json(errorsMessages.mapped())
     }
+    else {
+        next();
+    }
 }

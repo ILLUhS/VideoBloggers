@@ -4,8 +4,8 @@ export const authorizationGuardMiddleware = (req: Request, res: Response, next: 
     let logPass = req.get('Authorization');
     if(logPass) {
         if (logPass.substring(6) === "YWRtaW46cXdlcnR5") {
-            next();
+            return next();
         }
     }
-    res.sendStatus(401);
+    return res.sendStatus(401);
 }
