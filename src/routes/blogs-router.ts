@@ -1,6 +1,11 @@
-import {Router} from "express";
+import {Request, Response, Router} from "express";
 import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-middleware";
 import {blogsRepository} from "../repositories/blogs-repository";
+import {
+        descriptionValidation, errorsValidation,
+        nameBlogValidation,
+        websiteUrlValidation
+} from "../middlewares/input-validation-middleware";
 
 export const blogsRouter = Router({});
 
@@ -25,3 +30,21 @@ blogsRouter.delete('/:id', authorizationGuardMiddleware, (req, res) => {
                 return res.sendStatus(404);
         }
 })
+blogsRouter.post('/', authorizationGuardMiddleware, nameBlogValidation,
+    descriptionValidation, websiteUrlValidation, errorsValidation,
+    (req: Request, res: Response) => {
+        const createdBlog = blogsRepository.createBlog(String(req.body.name), String(req.body.description), String(req.body.websiteUrl));
+        return res.status(201).json(createdBlog)
+})
+blogsRouter.put('/:id', authorizationGuardMiddleware, nameBlogValidation,
+    descriptionValidation, websiteUrlValidation, errorsValidation,
+    (req: Request, res: Response) => {
+            const updatedBlog = blogsRepository.updateBlog(Number(req.params.id), String(req.body.name),
+                String(req.body.description), String(req.body.websiteUrl));
+            if(updatedBlog) {
+                    return res.sendStatus(204);
+            }
+            else {
+                    return res.sendStatus(404);
+            }
+    })
