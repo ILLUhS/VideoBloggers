@@ -21,9 +21,9 @@ const isValidBlogTd: CustomValidator = blogId => {
 export const nameBlogValidation = body('name').trim().isLength({min: 1, max: 15});
 export const descriptionBlogValidation = body('description').trim().isLength({min: 1, max: 500});
 export const websiteUrlBlogValidation = body('websiteUrl').isURL({protocols: ['https']}).isLength({max: 100});
-export const titlePostValidation = body('description').trim().isLength({min: 1, max: 30});
-export const shortDescriptionPostValidation = body('description').trim().isLength({min: 1, max: 100});
-export const contentPostValidation = body('description').trim().isLength({min: 1, max: 1000});
+export const titlePostValidation = body('title').trim().isLength({min: 1, max: 30});
+export const shortDescriptionPostValidation = body('shortDescription').trim().isLength({min: 1, max: 100});
+export const contentPostValidation = body('content').trim().isLength({min: 1, max: 1000});
 export const blogIdPostValidation = body('blogId').custom(isValidBlogTd);
 
 
