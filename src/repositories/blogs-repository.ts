@@ -29,7 +29,7 @@ export const blogsRepository = {       //объект с методами упр
     },
     createBlog(name: string, description: string, websiteUrl: string) {
         const newBlog = {
-            id: String((new Date()).getMilliseconds()),
+            id: String((new Date()).valueOf()),
             name: name,
             description: description,
             websiteUrl: websiteUrl
