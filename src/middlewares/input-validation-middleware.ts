@@ -10,7 +10,7 @@ type errorsType = {
     errorsMessages: errorsMessagesType[];
 }
 const isValidBlogTd: CustomValidator = blogId => {
-    const blog = blogsRepository.findBlogById(Number(blogId));
+    const blog = blogsRepository.findBlogById(String(blogId));
     if (blog) {
         return true;
     }

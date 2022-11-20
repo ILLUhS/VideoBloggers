@@ -1,5 +1,5 @@
 type BlogsType = {
-    id: number;
+    id: string;
     name: string;
     description: string;
     websiteUrl: string;
@@ -15,10 +15,10 @@ export const blogsRepository = {       //объект с методами упр
     returnAllBlogs() {
         return blogsRepositoryDb.blogs;
     },
-    findBlogById(id: number) {
+    findBlogById(id: string) {
         return blogsRepositoryDb.blogs.find(b => b.id === id); //array || undefined
     },
-    deleteBlogByTd(id: number) {
+    deleteBlogByTd(id: string) {
         for(let i = 0; i < blogsRepositoryDb.blogs.length; i++) {
             if(blogsRepositoryDb.blogs[i].id === id) {
                 blogsRepositoryDb.blogs.splice(i, 1);
@@ -29,7 +29,7 @@ export const blogsRepository = {       //объект с методами упр
     },
     createBlog(name: string, description: string, websiteUrl: string) {
         const newBlog = {
-            id: Number(new Date()),
+            id: String(new Date()),
             name: name,
             description: description,
             websiteUrl: websiteUrl
@@ -37,7 +37,7 @@ export const blogsRepository = {       //объект с методами упр
         blogsRepositoryDb.blogs.push(newBlog);
         return newBlog;
     },
-    updateBlog(id: number, name: string, description: string, websiteUrl: string) {
+    updateBlog(id: string, name: string, description: string, websiteUrl: string) {
         const foundBlogsUpdate = blogsRepositoryDb.blogs.find(b => b.id === id);
         if(foundBlogsUpdate) {
             foundBlogsUpdate.name = name;

@@ -13,7 +13,7 @@ blogsRouter.get('/', (req, res) => {
         return res.status(200).json(blogsRepository.returnAllBlogs());
 })
 blogsRouter.get('/:id', (req, res) => {
-        const foundBlog = blogsRepository.findBlogById(Number(req.params.id));
+        const foundBlog = blogsRepository.findBlogById(String(req.params.id));
         if(foundBlog) {
                 return res.status(200).json(foundBlog);
         }
@@ -22,7 +22,7 @@ blogsRouter.get('/:id', (req, res) => {
         }
 })
 blogsRouter.delete('/:id', authorizationGuardMiddleware, (req, res) => {
-        const deletedBlog = blogsRepository.deleteBlogByTd(Number(req.params.id));
+        const deletedBlog = blogsRepository.deleteBlogByTd(String(req.params.id));
         if(deletedBlog) {
                 return res.sendStatus(204);
         }
@@ -39,7 +39,7 @@ blogsRouter.post('/', authorizationGuardMiddleware, nameBlogValidation,
 blogsRouter.put('/:id', authorizationGuardMiddleware, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
     (req: Request, res: Response) => {
-            const updatedBlog = blogsRepository.updateBlog(Number(req.params.id), String(req.body.name),
+            const updatedBlog = blogsRepository.updateBlog(String(req.params.id), String(req.body.name),
                 String(req.body.description), String(req.body.websiteUrl));
             if(updatedBlog) {
                     return res.sendStatus(204);

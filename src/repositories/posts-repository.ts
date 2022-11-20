@@ -1,6 +1,6 @@
-import {blogsRepository} from "../repositories/blogs-repository";
+import {blogsRepository} from "./blogs-repository";
 type PostsType = {
-    id: number;
+    id: string;
     title: string;
     shortDescription: string;
     content: string;
@@ -18,10 +18,10 @@ export const postsRepository = {       //объект с методами упр
     returnAllPosts() {
         return postsRepositoryDb.posts;
     },
-    findPostById(id: number) {
+    findPostById(id: string) {
         return postsRepositoryDb.posts.find(p => p.id === id); //array || undefined
     },
-    deletePostByTd(id: number) {
+    deletePostByTd(id: string) {
         for(let i = 0; i < postsRepositoryDb.posts.length; i++) {
             if(postsRepositoryDb.posts[i].id === id) {
                 postsRepositoryDb.posts.splice(i, 1);
@@ -31,10 +31,10 @@ export const postsRepository = {       //объект с методами упр
         return false
     },
     createPost(title: string, shortDescription: string, content: string, blogId: string) {
-        const currentBlog = blogsRepository.findBlogById(Number(blogId));
+        const currentBlog = blogsRepository.findBlogById(blogId);
         if(currentBlog) {
             const newPost = {
-                id: Number(new Date()),
+                id: String(new Date()),
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
@@ -45,9 +45,9 @@ export const postsRepository = {       //объект с методами упр
             return newPost;
         }
     },
-    updatePost(id: number, title: string, shortDescription: string, content: string, blogId: string) {
+    updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
         const foundPostsUpdate = postsRepositoryDb.posts.find(b => b.id === id);
-        const foundBlog = blogsRepository.findBlogById(Number(blogId));
+        const foundBlog = blogsRepository.findBlogById(String(blogId));
         if(foundPostsUpdate && foundBlog) {
             foundPostsUpdate.title = title;
             foundPostsUpdate.shortDescription = shortDescription;
