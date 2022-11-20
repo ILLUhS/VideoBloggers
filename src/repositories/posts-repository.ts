@@ -34,7 +34,7 @@ export const postsRepository = {       //объект с методами упр
         const currentBlog = blogsRepository.findBlogById(blogId);
         if(currentBlog) {
             const newPost = {
-                id: String(new Date()),
+                id: String((new Date()).getMilliseconds()),
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
