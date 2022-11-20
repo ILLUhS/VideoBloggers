@@ -29,7 +29,7 @@ export const blogIdPostValidation = body('blogId').custom(isValidBlogTd);
 
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
     const errors: errorsType = {errorsMessages: []};
-    for(let i = 0; i < validationResult(req).array().length; i++) {
+    for(let i = 0; i < validationResult(req).array({onlyFirstError: true}).length; i++) {
         errors.errorsMessages.push({
             message: "bad input",
             field: validationResult(req).array({onlyFirstError: true})[i].param
