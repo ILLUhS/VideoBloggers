@@ -24,7 +24,7 @@ export const websiteUrlBlogValidation = body('websiteUrl').isURL({protocols: ['h
 export const titlePostValidation = body('description').trim().isLength({min: 1, max: 30});
 export const shortDescriptionPostValidation = body('description').trim().isLength({min: 1, max: 100});
 export const contentPostValidation = body('description').trim().isLength({min: 1, max: 1000});
-export const blogIdValidation = body('blogId').custom(isValidBlogTd);
+export const blogIdPostValidation = body('blogId').custom(isValidBlogTd);
 
 
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
@@ -32,7 +32,7 @@ export const errorsValidation = (req: Request, res: Response, next: NextFunction
     for(let i = 0; i < validationResult(req).array().length; i++) {
         errors.errorsMessages.push({
             message: "bad input",
-            field: validationResult(req).array()[i].param
+            field: validationResult(req).array({onlyFirstError: true})[i].param
         });
     }
     if(errors.errorsMessages.length){

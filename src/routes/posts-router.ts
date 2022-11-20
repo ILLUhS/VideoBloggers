@@ -1,0 +1,52 @@
+import {Request, Response, Router} from "express";
+import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-middleware";
+import {postsRepository} from "../repositories/posts-repository";
+import {
+    blogIdPostValidation,
+    contentPostValidation, errorsValidation,
+    shortDescriptionPostValidation, titlePostValidation
+} from "../middlewares/input-validation-middleware";
+
+
+export const postsRouter = Router({});
+
+postsRouter.get('/', (req, res) => {
+    return res.status(200).json(postsRepository.returnAllPosts());
+})
+postsRouter.get('/:id', (req, res) => {
+    const foundPost = postsRepository.findPostById(Number(req.params.id));
+    if(foundPost) {
+        return res.status(200).json(foundPost);
+    }
+    else {
+        return res.sendStatus(404);
+    }
+})
+postsRouter.delete('/:id', authorizationGuardMiddleware, (req, res) => {
+    const deletedPost = postsRepository.deletePostByTd(Number(req.params.id));
+    if(deletedPost) {
+        return res.sendStatus(204);
+    }
+    else {
+        return res.sendStatus(404);
+    }
+})
+postsRouter.post('/', authorizationGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
+    contentPostValidation, blogIdPostValidation, errorsValidation,
+    (req: Request, res: Response) => {
+        const createdPost = postsRepository.createPost(String(req.body.title), String(req.body.shortDescription),
+            String(req.body.content), String(req.body.blogId));
+        return res.status(201).json(createdPost)
+    })
+postsRouter.put('/:id', authorizationGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
+    contentPostValidation, blogIdPostValidation, errorsValidation,
+    (req: Request, res: Response) => {
+        const updatedPost = postsRepository.updatePost(Number(req.params.id), String(req.body.title),
+            String(req.body.shortDescription), String(req.body.content), String(req.body.blogId));
+        if(updatedPost) {
+            return res.sendStatus(204);
+        }
+        else {
+            return res.sendStatus(404);
+        }
+    })

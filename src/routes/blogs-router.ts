@@ -47,4 +47,4 @@ blogsRouter.put('/:id', authorizationGuardMiddleware, nameBlogValidation,
             else {
                     return res.sendStatus(404);
             }
-    })
+})
