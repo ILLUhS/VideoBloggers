@@ -1,19 +1,18 @@
 import {blogsCollection, BlogsType} from "./db";
-import {ObjectId} from "mongodb";
 
 export const blogsRepository = {       //объект с методами управления данными
     async returnAllBlogs () {
         return blogsCollection.find().toArray();
     },
     async findBlogById(id: string): Promise<BlogsType | null> {
-        return blogsCollection.findOne({id: id}, )  //object || undefined
+        return blogsCollection.findOne({_id: id})  //object || undefined
     },
     async deleteBlogByTd(id: string) {
-        return (await blogsCollection.deleteOne({_id: new ObjectId(id)})).deletedCount === 1;
+        return (await blogsCollection.deleteOne({_id: id})).deletedCount === 1;
     },
     async createBlog(name: string, description: string, websiteUrl: string) {
         const newBlog = {
-            id: String((new Date()).valueOf()),
+            _id: String((new Date()).valueOf()),
             name: name,
             description: description,
             websiteUrl: websiteUrl,
@@ -23,7 +22,7 @@ export const blogsRepository = {       //объект с методами упр
         return newBlog;
     },
     async updateBlog(id: string, name: string, description: string, websiteUrl: string) {
-        return (await blogsCollection.updateOne({id: id}, { $set: {
+        return (await blogsCollection.updateOne({_id: id}, { $set: {
             name: name,
             description: description,
             websiteUrl: websiteUrl
