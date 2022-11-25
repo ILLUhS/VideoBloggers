@@ -4,7 +4,7 @@ import {testingAllDataRouter} from "./routes/testing-all-data-router";
 import {postsRouter} from "./routes/posts-router";
 import {runDb} from "./repositories/db";
 
-export const app = express();  //вынести в отдельный файл (config app), из index.ts ничего не должно экспортироваься, только импорт
+export const app = express(); //вынести в отдельный файл (config app), из index.ts ничего не должно экспортироваься, только импорт
 const port = process.env.PORT || 3000;
 const jsonBody = express.json();
 app.use(jsonBody);
