@@ -10,11 +10,11 @@ import {
 
 export const postsRouter = Router({});
 
-postsRouter.get('/', (req, res) => {
-    return res.status(200).json(postsRepository.returnAllPosts());
+postsRouter.get('/', async (req, res) => {
+    return res.status(200).json(await postsRepository.returnAllPosts());
 })
-postsRouter.get('/:id', (req, res) => {
-    const foundPost = postsRepository.findPostById(String(req.params.id));
+postsRouter.get('/:id', async (req, res) => {
+    const foundPost = await postsRepository.findPostById(String(req.params.id));
     if(foundPost) {
         return res.status(200).json(foundPost);
     }
@@ -22,8 +22,8 @@ postsRouter.get('/:id', (req, res) => {
         return res.sendStatus(404);
     }
 })
-postsRouter.delete('/:id', authorizationGuardMiddleware, (req, res) => {
-    const deletedPost = postsRepository.deletePostByTd(String(req.params.id));
+postsRouter.delete('/:id', authorizationGuardMiddleware, async (req, res) => {
+    const deletedPost = await postsRepository.deletePostByTd(String(req.params.id));
     if(deletedPost) {
         return res.sendStatus(204);
     }
@@ -33,15 +33,15 @@ postsRouter.delete('/:id', authorizationGuardMiddleware, (req, res) => {
 })
 postsRouter.post('/', authorizationGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, blogIdPostValidation, errorsValidation,
-    (req: Request, res: Response) => {
-        const createdPost = postsRepository.createPost(String(req.body.title), String(req.body.shortDescription),
+    async (req: Request, res: Response) => {
+        const createdPost = await postsRepository.createPost(String(req.body.title), String(req.body.shortDescription),
             String(req.body.content), String(req.body.blogId));
         return res.status(201).json(createdPost)
     })
 postsRouter.put('/:id', authorizationGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, blogIdPostValidation, errorsValidation,
-    (req: Request, res: Response) => {
-        const updatedPost = postsRepository.updatePost(String(req.params.id), String(req.body.title),
+    async (req: Request, res: Response) => {
+        const updatedPost = await postsRepository.updatePost(String(req.params.id), String(req.body.title),
             String(req.body.shortDescription), String(req.body.content), String(req.body.blogId));
         if(updatedPost) {
             return res.sendStatus(204);

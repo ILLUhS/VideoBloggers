@@ -9,12 +9,11 @@ type errorsMessagesType = {
 type errorsType = {
     errorsMessages: errorsMessagesType[];
 }
-const isValidBlogTd: CustomValidator = blogId => {
-    const blog = blogsRepository.findBlogById(String(blogId));
+const isValidBlogTd: CustomValidator = async blogId => {
+    const blog = await blogsRepository.findBlogById(String(blogId));
     if (blog) {
         return true;
-    }
-    else {
+    } else {
         throw new Error('Blog with blogId does not exist');
     }
 };

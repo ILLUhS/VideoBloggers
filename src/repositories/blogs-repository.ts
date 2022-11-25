@@ -1,9 +1,7 @@
-type BlogsType = {
-    id: string;
-    name: string;
-    description: string;
-    websiteUrl: string;
-};
+import {blogsCollection, BlogsType} from "./db";
+import {ObjectId} from "mongodb";
+
+
 type BlogsRepositoryType = {
     blogs: BlogsType[];
 };
@@ -12,33 +10,47 @@ const blogsRepositoryDb: BlogsRepositoryType = {
 };
 
 export const blogsRepository = {       //объект с методами управления данными
-    returnAllBlogs() {
-        return blogsRepositoryDb.blogs;
+    async returnAllBlogs () {
+        return blogsCollection.find().toArray();//blogsRepositoryDb.blogs;
     },
-    findBlogById(id: string) {
-        return blogsRepositoryDb.blogs.find(b => b.id === id); //array || undefined
+    async findBlogById(id: string): Promise<BlogsType | null> {
+        return blogsCollection.findOne({_id: new ObjectId(id)}) //blogsRepositoryDb.blogs.find(b => b.id === id); //array || undefined
     },
-    deleteBlogByTd(id: string) {
-        for(let i = 0; i < blogsRepositoryDb.blogs.length; i++) {
+    async deleteBlogByTd(id: string) {
+        return (await blogsCollection.deleteOne({_id: new ObjectId(id)})).deletedCount === 1;
+        /*for(let i = 0; i < blogsRepositoryDb.blogs.length; i++) {
             if(blogsRepositoryDb.blogs[i].id === id) {
                 blogsRepositoryDb.blogs.splice(i, 1);
                 return true;
             }
         }
-        return false
+        return false*/
     },
-    createBlog(name: string, description: string, websiteUrl: string) {
-        const newBlog = {
+    async createBlog(name: string, description: string, websiteUrl: string) {
+        const result = await blogsCollection.insertOne({
+            //id: String((new Date()).valueOf()),
+            name: name,
+            description: description,
+            websiteUrl: websiteUrl,
+            createdAt: new Date().toISOString()
+        });
+        return blogsRepository.findBlogById(result.insertedId.toString());
+        /*const newBlog = {
             id: String((new Date()).valueOf()),
             name: name,
             description: description,
             websiteUrl: websiteUrl
         };
         blogsRepositoryDb.blogs.push(newBlog);
-        return newBlog;
+        return newBlog;*/
     },
-    updateBlog(id: string, name: string, description: string, websiteUrl: string) {
-        const foundBlogsUpdate = blogsRepositoryDb.blogs.find(b => b.id === id);
+    async updateBlog(id: string, name: string, description: string, websiteUrl: string) {
+        return (await blogsCollection.updateOne({_id: new ObjectId(id)}, { $set: {
+            name: name,
+            description: description,
+            websiteUrl: websiteUrl
+        }})).matchedCount === 1;
+        /*const foundBlogsUpdate = blogsRepositoryDb.blogs.find(b => b.id === id);
         if(foundBlogsUpdate) {
             foundBlogsUpdate.name = name;
             foundBlogsUpdate.description = description;
@@ -47,9 +59,10 @@ export const blogsRepository = {       //объект с методами упр
         }
         else {
             return false;
-        }
+        }*/
     },
-    allBlogsDelete() {
-        blogsRepositoryDb.blogs = [];
+    async allBlogsDelete() {
+        await blogsCollection.deleteMany({})
+        //blogsRepositoryDb.blogs = [];
     }
 }

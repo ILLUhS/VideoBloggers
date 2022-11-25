@@ -4,8 +4,8 @@ import {postsRepository} from "../repositories/posts-repository";
 
 export const testingAllDataRouter = Router({});
 
-testingAllDataRouter.delete('/', (req, res) => {
-    blogsRepository.allBlogsDelete();
-    postsRepository.allPostsDelete()
+testingAllDataRouter.delete('/', async (req, res) => {
+    await blogsRepository.allBlogsDelete();
+    await postsRepository.allPostsDelete()
     return res.sendStatus(204);
 })

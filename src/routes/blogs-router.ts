@@ -9,11 +9,11 @@ import {
 
 export const blogsRouter = Router({});
 
-blogsRouter.get('/', (req, res) => {
-        return res.status(200).json(blogsRepository.returnAllBlogs());
+blogsRouter.get('/', async (req, res) => {
+        return res.status(200).json(await blogsRepository.returnAllBlogs());
 })
-blogsRouter.get('/:id', (req, res) => {
-        const foundBlog = blogsRepository.findBlogById(String(req.params.id));
+blogsRouter.get('/:id', async (req, res) => {
+        const foundBlog = await blogsRepository.findBlogById(String(req.params.id));
         if(foundBlog) {
                 return res.status(200).json(foundBlog);
         }
@@ -21,8 +21,8 @@ blogsRouter.get('/:id', (req, res) => {
                 return res.sendStatus(404);
         }
 })
-blogsRouter.delete('/:id', authorizationGuardMiddleware, (req, res) => {
-        const deletedBlog = blogsRepository.deleteBlogByTd(String(req.params.id));
+blogsRouter.delete('/:id', authorizationGuardMiddleware, async (req, res) => {
+        const deletedBlog = await blogsRepository.deleteBlogByTd(String(req.params.id));
         if(deletedBlog) {
                 return res.sendStatus(204);
         }
@@ -32,14 +32,14 @@ blogsRouter.delete('/:id', authorizationGuardMiddleware, (req, res) => {
 })
 blogsRouter.post('/', authorizationGuardMiddleware, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
-    (req: Request, res: Response) => {
-        const createdBlog = blogsRepository.createBlog(String(req.body.name), String(req.body.description), String(req.body.websiteUrl));
+    async (req: Request, res: Response) => {
+        const createdBlog = await blogsRepository.createBlog(String(req.body.name), String(req.body.description), String(req.body.websiteUrl));
         return res.status(201).json(createdBlog)
 })
 blogsRouter.put('/:id', authorizationGuardMiddleware, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
-    (req: Request, res: Response) => {
-            const updatedBlog = blogsRepository.updateBlog(String(req.params.id), String(req.body.name),
+    async (req: Request, res: Response) => {
+            const updatedBlog = await blogsRepository.updateBlog(String(req.params.id), String(req.body.name),
                 String(req.body.description), String(req.body.websiteUrl));
             if(updatedBlog) {
                     return res.sendStatus(204);
