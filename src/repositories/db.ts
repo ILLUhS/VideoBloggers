@@ -1,5 +1,6 @@
 import {MongoClient, ObjectId} from "mongodb";
-
+import * as dotenv from 'dotenv'
+dotenv.config();
 export type BlogsType = {
     _id?: ObjectId;
     name: string;
@@ -16,11 +17,13 @@ export type PostsType = {
     blogName: string;
     createdAt: string;
 };
-const mongoURI = process.env.mongoURI || "mongodb+srv://illuhs:55FALKyiHyOE0NdL@cluster0.bht0jnx.mongodb.net/video-bloggers?retryWrites=true&w=majority" //"mongodb://127.0.0.1:27017"
-
+const mongoURI = process.env.mongoURL //"mongodb://127.0.0.1:27017"
+if(!mongoURI) {
+    throw Error('Bad URL')
+}
 const client = new MongoClient(mongoURI);
 
-const db = client.db("video-bloggers");
+const db = client.db();
 
 export const blogsCollection = db.collection<BlogsType>("blogs");
 export const postsCollection = db.collection<PostsType>("posts");
@@ -28,7 +31,6 @@ export const postsCollection = db.collection<PostsType>("posts");
 export async function runDb() {
     try {
         await client.connect();
-        await client.db("video-bloggers").command({ping: 1});
     } catch {
         await client.close();
     }
