@@ -3,34 +3,34 @@ import {postsCollection} from "./db";
 
 export const postsRepository = {       //объект с методами управления данными
     async returnAllPosts() {
-        return postsCollection.find().toArray();
+        return postsCollection.find().project({_id: 0}).toArray();
     },
     async findPostById(id: string) {
-        return postsCollection.findOne({_id: id}); //object || undefined
+        return postsCollection.findOne({id: id}, {projection:{_id:0}}); //object || undefined
     },
     async deletePostByTd(id: string) {
-        return (await postsCollection.deleteOne({_id: id})).deletedCount === 1;
+        return (await postsCollection.deleteOne({id: id})).deletedCount === 1;
     },
     async createPost(title: string, shortDescription: string, content: string, blogId: string) {
         const currentBlog = await blogsRepository.findBlogById(blogId);
         if(currentBlog) {
             const newPost = {
-                _id: String((new Date()).valueOf()),
+                id: String((new Date()).valueOf()),
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
-                blogId: String(currentBlog._id),
+                blogId: String(currentBlog.id),
                 blogName: currentBlog.name,
                 createdAt: new Date().toISOString()
             };
             await postsCollection.insertOne(newPost);
-            return newPost;
+            return postsCollection.findOne({id: newPost.id}, {projection:{_id:0}});
         }
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
         const foundBlog = await blogsRepository.findBlogById(blogId);
         if(foundBlog) {
-            return (await postsCollection.updateOne({_id: id}, { $set:{
+            return (await postsCollection.updateOne({id: id}, { $set:{
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
