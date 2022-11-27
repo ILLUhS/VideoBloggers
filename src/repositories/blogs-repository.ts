@@ -18,8 +18,8 @@ export const blogsRepository = {       //объект с методами упр
             websiteUrl: websiteUrl,
             createdAt: new Date().toISOString()
         };
-        await blogsCollection.insertOne(newBlog);
-        return blogsCollection.findOne({id: newBlog.id}, {projection:{_id:0}});
+        await blogsCollection.insertOne({...newBlog});
+        return newBlog; //blogsCollection.findOne({id: newBlog.id}, {projection:{_id:0}});
     },
     async updateBlog(id: string, name: string, description: string, websiteUrl: string) {
         return (await blogsCollection.updateOne({id: id}, { $set: {

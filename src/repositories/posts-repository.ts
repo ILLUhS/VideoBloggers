@@ -23,8 +23,8 @@ export const postsRepository = {       //объект с методами упр
                 blogName: currentBlog.name,
                 createdAt: new Date().toISOString()
             };
-            await postsCollection.insertOne(newPost);
-            return postsCollection.findOne({id: newPost.id}, {projection:{_id:0}});
+            await postsCollection.insertOne({...newPost});
+            return newPost; //postsCollection.findOne({id: newPost.id}, {projection:{_id:0}});
         }
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
