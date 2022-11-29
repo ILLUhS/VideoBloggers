@@ -25,10 +25,10 @@ export const blogsRepository = {       //объект с методами упр
     },
     async updateBlog(id: string, name: string, description: string, websiteUrl: string) {
         return (await blogsCollection.updateOne({id: id}, { $set: {
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl
-        }})).matchedCount === 1;
+                name: name,
+                description: description,
+                websiteUrl: websiteUrl
+            }})).matchedCount === 1;
     },
     async allBlogsDelete() {
         await blogsCollection.deleteMany({})
@@ -37,13 +37,13 @@ export const blogsRepository = {       //объект с методами упр
         let sortDirection: SortDirection = 1;
         if(searchParams.sortDirection === 'desc')
             sortDirection = -1;
-        const blogs = await blogsCollection.find({name: {$regex: searchParams.searchNameTerm}},
+        const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
                 limit: searchParams.pageSize,
                 sort: [[searchParams.sortBy, sortDirection]]
             }).project({_id: 0}).toArray();
-        const blogsCount = await blogsCollection.countDocuments({name: {$regex: searchParams.searchNameTerm}});
+        const blogsCount = await blogsCollection.countDocuments({name:  new RegExp(searchParams.searchNameTerm, 'i')});
         return {
             pagesCount: Math.ceil(blogsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
