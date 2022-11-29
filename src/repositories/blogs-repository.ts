@@ -1,4 +1,6 @@
 import {blogsCollection, BlogsType} from "./db";
+import {searchParamsBlogs} from "../middlewares/input-validation-middleware";
+import {SortDirection} from "mongodb";
 
 export const blogsRepository = {       //объект с методами управления данными
     async returnAllBlogs () {
@@ -18,7 +20,7 @@ export const blogsRepository = {       //объект с методами упр
             websiteUrl: websiteUrl,
             createdAt: new Date().toISOString()
         };
-        await blogsCollection.insertOne({...newBlog});
+        await blogsCollection.insertOne({...newBlog}); //передать в функцию сами поля, без создания объекта, переделать ретурн как в файлике фикс айди
         return newBlog; //blogsCollection.findOne({id: newBlog.id}, {projection:{_id:0}});
     },
     async updateBlog(id: string, name: string, description: string, websiteUrl: string) {
@@ -30,5 +32,30 @@ export const blogsRepository = {       //объект с методами упр
     },
     async allBlogsDelete() {
         await blogsCollection.deleteMany({})
+    },
+    async getBlogsWithQueryParam(searchParams: searchParamsBlogs) {
+        let sortDirection: SortDirection = 1;
+        if(searchParams.sortDirection === 'desc')
+            sortDirection = -1;
+        const blogs = await blogsCollection.find({name: {$regex: searchParams.searchNameTerm}},
+            {
+                skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
+                limit: searchParams.pageSize,
+                sort: [[searchParams.sortBy, sortDirection]]
+            }).project({_id: 0}).toArray();
+        const blogsCount = await blogsCollection.countDocuments({name: {$regex: searchParams.searchNameTerm}});
+        return {
+            pagesCount: Math.ceil(blogsCount / searchParams.pageSize),
+            page: searchParams.pageNumber,
+            pageSize: searchParams.pageSize,
+            totalCount: blogsCount,
+            items: blogs.map(blog => ({
+                id: blog.id,
+                name: blog.name,
+                description: blog.description,
+                websiteUrl: blog.websiteUrl,
+                createdAt: blog.createdAt
+            }))
+        }
     }
 }

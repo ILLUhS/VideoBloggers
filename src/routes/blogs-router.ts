@@ -3,14 +3,14 @@ import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-m
 import {blogsRepository} from "../repositories/blogs-repository";
 import {
         descriptionBlogValidation, errorsValidation,
-        nameBlogValidation,
-        websiteUrlBlogValidation
+        nameBlogValidation, queryParamsValidation, websiteUrlBlogValidation
 } from "../middlewares/input-validation-middleware";
 
 export const blogsRouter = Router({});
 
-blogsRouter.get('/', async (req, res) => {
-        return res.status(200).json(await blogsRepository.returnAllBlogs());
+blogsRouter.get('/', async (req: Request, res: Response) => {
+        const sp = queryParamsValidation(req.query);
+        return res.status(200).json(await blogsRepository.getBlogsWithQueryParam(sp));
 })
 blogsRouter.get('/:id', async (req, res) => {
         const foundBlog = await blogsRepository.findBlogById(String(req.params.id));
@@ -33,7 +33,8 @@ blogsRouter.delete('/:id', authorizationGuardMiddleware, async (req, res) => {
 blogsRouter.post('/', authorizationGuardMiddleware, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
     async (req: Request, res: Response) => {
-        const createdBlog = await blogsRepository.createBlog(String(req.body.name), String(req.body.description), String(req.body.websiteUrl));
+        const createdBlog = await blogsRepository.createBlog(String(req.body.name),
+            String(req.body.description), String(req.body.websiteUrl));
         return res.status(201).json(createdBlog)
 })
 blogsRouter.put('/:id', authorizationGuardMiddleware, nameBlogValidation,
