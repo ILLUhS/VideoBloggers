@@ -1,20 +1,13 @@
 import {MongoClient} from "mongodb";
 import * as dotenv from 'dotenv'
+import {BlogsCollectionModel} from "../models/blogs-collection-model";
+import {PostsCollectionType} from "../models/posts-collection-type";
 dotenv.config();
 export type BlogsType = {
     id: string;
     name: string;
     description: string;
     websiteUrl: string;
-    createdAt: string;
-};
-export type PostsType = {
-    id: string;
-    title: string;
-    shortDescription: string;
-    content: string;
-    blogId: string;
-    blogName: string;
     createdAt: string;
 };
 const mongoURI = process.env.mongoURL //"mongodb://127.0.0.1:27017"
@@ -25,8 +18,8 @@ const client = new MongoClient(mongoURI);
 
 const db = client.db();
 
-export const blogsCollection = db.collection<BlogsType>("blogs");
-export const postsCollection = db.collection<PostsType>("posts");
+export const blogsCollection = db.collection<BlogsCollectionModel>("blogs");
+export const postsCollection = db.collection<PostsCollectionType>("posts");
 
 export async function runDb() {
     try {

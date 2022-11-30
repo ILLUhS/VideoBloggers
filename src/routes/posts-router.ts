@@ -3,18 +3,20 @@ import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-m
 import {postsRepository} from "../repositories/posts-repository";
 import {
     blogIdPostValidation,
-    contentPostValidation, errorsValidation,
+    contentPostValidation, errorsValidation, queryParamsValidation,
     shortDescriptionPostValidation, titlePostValidation
 } from "../middlewares/input-validation-middleware";
+import {queryRepository} from "../repositories/query-repository";
 
 
 export const postsRouter = Router({});
 
 postsRouter.get('/', async (req, res) => {
-    return res.status(200).json(await postsRepository.returnAllPosts());
+    const searchParams = queryParamsValidation(req.query);
+    return res.status(200).json(await queryRepository.getPotsWithQueryParam(searchParams));
 })
 postsRouter.get('/:id', async (req, res) => {
-    const foundPost = await postsRepository.findPostById(String(req.params.id));
+    const foundPost = await queryRepository.findPostById(String(req.params.id));
     if(foundPost) {
         return res.status(200).json(foundPost);
     }
