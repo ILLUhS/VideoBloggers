@@ -63,7 +63,8 @@ blogsRouter.post('/:id/posts', authorizationGuardMiddleware,
                     const createdPost = await postsService.createPost(
                         String(req.body.title),
                         String(req.body.shortDescription),
-                        String(req.body.content), String(req.body.blogId)
+                        String(req.body.content),
+                        String(req.params.id)
                     );
                     return res.status(201).json(createdPost)
             }
