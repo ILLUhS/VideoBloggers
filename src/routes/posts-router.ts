@@ -1,12 +1,12 @@
 import {Request, Response, Router} from "express";
 import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-middleware";
-import {postsRepository} from "../repositories/posts-repository";
 import {
     blogIdPostValidation,
     contentPostValidation, errorsValidation, queryParamsValidation,
     shortDescriptionPostValidation, titlePostValidation
 } from "../middlewares/input-validation-middleware";
 import {queryRepository} from "../repositories/query-repository";
+import {postsService} from "../services/posts-service";
 
 
 export const postsRouter = Router({});
@@ -25,7 +25,7 @@ postsRouter.get('/:id', async (req, res) => {
     }
 })
 postsRouter.delete('/:id', authorizationGuardMiddleware, async (req, res) => {
-    const deletedPost = await postsRepository.deletePostByTd(String(req.params.id));
+    const deletedPost = await postsService.deletePostByTd(String(req.params.id));
     if(deletedPost) {
         return res.sendStatus(204);
     }
@@ -36,14 +36,14 @@ postsRouter.delete('/:id', authorizationGuardMiddleware, async (req, res) => {
 postsRouter.post('/', authorizationGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, blogIdPostValidation, errorsValidation,
     async (req: Request, res: Response) => {
-        const createdPost = await postsRepository.createPost(String(req.body.title), String(req.body.shortDescription),
+        const createdPost = await postsService.createPost(String(req.body.title), String(req.body.shortDescription),
             String(req.body.content), String(req.body.blogId));
         return res.status(201).json(createdPost)
     })
 postsRouter.put('/:id', authorizationGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, blogIdPostValidation, errorsValidation,
     async (req: Request, res: Response) => {
-        const updatedPost = await postsRepository.updatePost(String(req.params.id), String(req.body.title),
+        const updatedPost = await postsService.updatePost(String(req.params.id), String(req.body.title),
             String(req.body.shortDescription), String(req.body.content), String(req.body.blogId));
         if(updatedPost) {
             return res.sendStatus(204);

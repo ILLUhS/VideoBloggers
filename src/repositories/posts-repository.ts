@@ -1,39 +1,24 @@
 import {postsCollection} from "./db";
-import {queryRepository} from "./query-repository";
+import {PostCreateModel} from "../models/post-create-model";
+import {PostUpdateModel} from "../models/post-update-model";
 
 export const postsRepository = {       //объект с методами управления данными
-    async deletePostByTd(id: string) {
+    async deletePostByTd(id: string): Promise<boolean> {
         return (await postsCollection.deleteOne({id: id})).deletedCount === 1;
     },
-    async createPost(title: string, shortDescription: string, content: string, blogId: string) {
-        const currentBlog = await queryRepository.findBlogById(blogId);
-        if(currentBlog) {
-            const newPost = {
-                id: String((new Date()).valueOf()),
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: String(currentBlog.id),
-                blogName: currentBlog.name,
-                createdAt: new Date().toISOString()
-            };
-            await postsCollection.insertOne({...newPost});
-            return newPost; //postsCollection.findOne({id: newPost.id}, {projection:{_id:0}});
-        }
+    async createPost(newPost: PostCreateModel): Promise<void> {
+        await postsCollection.insertOne({...newPost});
     },
-    async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
-        const foundBlog = await queryRepository.findBlogById(blogId);
-        if(foundBlog) {
-            return (await postsCollection.updateOne({id: id}, { $set:{
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: foundBlog.name
+    async updatePost(updatePost: PostUpdateModel): Promise<boolean> {
+        return (await postsCollection.updateOne({id: updatePost.id}, { $set:{
+                title: updatePost.title,
+                shortDescription: updatePost.shortDescription,
+                content: updatePost.content,
+                blogId: updatePost.blogId,
+                blogName: updatePost.blogName
             }})).matchedCount === 1;
-        }
     },
-    async allPostsDelete() {
+    async allPostsDelete(): Promise<void> {
         await postsCollection.deleteMany({})
     }
 }

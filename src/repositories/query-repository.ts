@@ -1,7 +1,7 @@
-import {searchParamsPosts} from "../middlewares/input-validation-middleware";
 import {blogsCollection, BlogsType, postsCollection} from "./db";
+import {SearchParamsModel} from "../models/search-params-model";
 export const queryRepository = {
-    async getBlogsWithQueryParam(searchParams: searchParamsPosts) {
+    async getBlogsWithQueryParam(searchParams: SearchParamsModel) {
         const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -29,7 +29,7 @@ export const queryRepository = {
     async returnAllBlogs () {
         return blogsCollection.find().project({_id: 0}).toArray();
     },
-    async getPotsWithQueryParamAndBlogId(searchParams: searchParamsPosts, blogId: string) {
+    async getPotsWithQueryParamAndBlogId(searchParams: SearchParamsModel, blogId: string) {
         const posts = await postsCollection.find({blogId: blogId},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -53,7 +53,7 @@ export const queryRepository = {
             }))
         }
     },
-    async getPotsWithQueryParam(searchParams: searchParamsPosts) {
+    async getPotsWithQueryParam(searchParams: SearchParamsModel) {
         const posts = await postsCollection.find({},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,

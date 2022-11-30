@@ -1,6 +1,5 @@
 import {Request, Response, Router} from "express";
 import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-middleware";
-import {blogsRepository} from "../repositories/blogs-repository";
 import {
         blogIdPostValidation,
         descriptionBlogValidation, errorsValidation,
@@ -30,7 +29,7 @@ blogsRouter.get('/:id/posts', blogIdPostValidation, async (req: Request, res: Re
             String(req.params.id)));
 })
 blogsRouter.delete('/:id', authorizationGuardMiddleware, async (req, res) => {
-        const deletedBlog = await blogsRepository.deleteBlogByTd(String(req.params.id));
+        const deletedBlog = await blogsService.deleteBlogByTd(String(req.params.id));
         if(deletedBlog) {
                 return res.sendStatus(204);
         }
@@ -48,7 +47,7 @@ blogsRouter.post('/', authorizationGuardMiddleware, nameBlogValidation,
 blogsRouter.put('/:id', authorizationGuardMiddleware, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
     async (req: Request, res: Response) => {
-            const updatedBlog = await blogsRepository.updateBlog(String(req.params.id), String(req.body.name),
+            const updatedBlog = await blogsService.updateBlog(String(req.params.id), String(req.body.name),
                 String(req.body.description), String(req.body.websiteUrl));
             if(updatedBlog) {
                     return res.sendStatus(204);

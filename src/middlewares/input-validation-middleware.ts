@@ -2,6 +2,8 @@ import {NextFunction, Request, Response} from "express";
 import {body, validationResult, CustomValidator} from 'express-validator';
 import {queryRepository} from "../repositories/query-repository";
 import {SortDirection} from "mongodb";
+import {QueryInputParamsModel} from "../models/query-input-params-model";
+import {SearchParamsModel} from "../models/search-params-model";
 
 type errorsMessagesType = {
     message: string;
@@ -9,20 +11,6 @@ type errorsMessagesType = {
 };
 type errorsType = {
     errorsMessages: errorsMessagesType[];
-};
-export type queryParamsType = {
-    searchNameTerm?: string;
-    pageNumber?: string;
-    pageSize?: string;
-    sortBy?: string;
-    sortDirection?: string;
-};
-export type searchParamsPosts = {
-    searchNameTerm: string;
-    pageNumber: number;
-    pageSize: number;
-    sortBy: string;
-    sortDirection: SortDirection;
 };
 const isValidBlogTd: CustomValidator = async blogId => {
     const blog = await queryRepository.findBlogById(String(blogId));
@@ -57,7 +45,7 @@ export const errorsValidation = (req: Request, res: Response, next: NextFunction
     }
 }
 
-export const queryParamsValidation = (queryParams: queryParamsType): searchParamsPosts => {
+export const queryParamsValidation = (queryParams: QueryInputParamsModel): SearchParamsModel => {
     const searchNameTerm = queryParams.searchNameTerm || '';
     const pageNumber = queryParams.pageNumber || 1;
     const pageSize = queryParams.pageSize || 10;
