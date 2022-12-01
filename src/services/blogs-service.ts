@@ -1,4 +1,5 @@
 import {blogsRepository} from "../repositories/blogs-repository";
+import {postsService} from "./posts-service";
 
 export const blogsService = {       //объект с методами управления данными
     async deleteBlogByTd(id: string) {
@@ -14,6 +15,9 @@ export const blogsService = {       //объект с методами упра�
         };
         await blogsRepository.createBlog(newBlog)
         return newBlog;
+    },
+    async createPostByBlogId(title: string, shortDescription: string, content: string, blogId: string) {
+        return await postsService.createPost(title, shortDescription,content, blogId);
     },
     async updateBlog(id: string, name: string, description: string, websiteUrl: string) {
         const updateBlog = {

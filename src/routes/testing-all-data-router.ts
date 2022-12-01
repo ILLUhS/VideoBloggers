@@ -1,11 +1,11 @@
 import {Router} from "express";
-import {blogsRepository} from "../repositories/blogs-repository";
-import {postsRepository} from "../repositories/posts-repository";
+import {blogsService} from "../services/blogs-service";
+import {postsService} from "../services/posts-service";
 
 export const testingAllDataRouter = Router({});
 
 testingAllDataRouter.delete('/', async (req, res) => {
-    await blogsRepository.allBlogsDelete();
-    await postsRepository.allPostsDelete()
+    await blogsService.allBlogsDelete();
+    await postsService.allPostsDelete()
     return res.sendStatus(204);
 })

@@ -1,9 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {body, validationResult, CustomValidator} from 'express-validator';
 import {queryRepository} from "../repositories/query-repository";
-import {SortDirection} from "mongodb";
-import {QueryInputParamsModel} from "../models/query-input-params-model";
-import {SearchParamsModel} from "../models/search-params-model";
 
 type errorsMessagesType = {
     message: string;
@@ -28,7 +25,6 @@ export const shortDescriptionPostValidation = body('shortDescription').trim().is
 export const contentPostValidation = body('content').trim().isLength({min: 1, max: 1000});
 export const blogIdPostValidation = body('blogId').custom(isValidBlogTd);
 
-
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
     const errors: errorsType = {errorsMessages: []};
     for(let i = 0; i < validationResult(req).array({onlyFirstError: true}).length; i++) {
@@ -44,21 +40,3 @@ export const errorsValidation = (req: Request, res: Response, next: NextFunction
         return next();
     }
 }
-
-export const queryParamsValidation = (queryParams: QueryInputParamsModel): SearchParamsModel => {
-    const searchNameTerm = queryParams.searchNameTerm || '';
-    const pageNumber = queryParams.pageNumber || 1;
-    const pageSize = queryParams.pageSize || 10;
-    const sortBy = queryParams.sortBy || 'createdAt';
-    let sortDirection: SortDirection = 'desc';
-    if(String(queryParams.sortDirection) === 'asc')
-        sortDirection = 'asc';
-    return {
-        searchNameTerm: String(searchNameTerm),
-        pageNumber: Number(pageNumber),
-        pageSize: Number(pageSize),
-        sortBy: String(sortBy),
-        sortDirection: sortDirection
-    };
-}
-

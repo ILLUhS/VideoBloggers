@@ -1,5 +1,6 @@
 import {postsRepository} from "../repositories/posts-repository";
 import {queryRepository} from "../repositories/query-repository";
+import {blogsRepository} from "../repositories/blogs-repository";
 
 export const postsService = {
     async deletePostByTd(id: string) {
@@ -13,16 +14,17 @@ export const postsService = {
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
-                blogId: String(currentBlog.id),
+                blogId: blogId,
                 blogName: currentBlog.name,
                 createdAt: new Date().toISOString()
             };
             await postsRepository.createPost(newPost);
             return newPost;
         }
+        return false;
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
-        const foundBlog = await queryRepository.findBlogById(blogId);
+        const foundBlog = await blogsRepository.findBlogById(blogId);
         if(foundBlog) {
             const updatePost = {
                 id: id,
@@ -34,6 +36,7 @@ export const postsService = {
             };
             return await postsRepository.updatePost(updatePost);
         }
+        return false;
     },
     async allPostsDelete() {
         await postsRepository.allPostsDelete();

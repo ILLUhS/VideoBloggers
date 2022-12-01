@@ -1,7 +1,26 @@
 import {blogsCollection, BlogsType, postsCollection} from "./db";
 import {SearchParamsModel} from "../models/search-params-model";
+import {QueryInputParamsModel} from "../models/query-input-params-model";
+import {SortDirection} from "mongodb";
 export const queryRepository = {
-    async getBlogsWithQueryParam(searchParams: SearchParamsModel) {
+    queryParamsValidation(queryParams: QueryInputParamsModel): SearchParamsModel {
+        const searchNameTerm = queryParams.searchNameTerm || '';
+        const pageNumber = queryParams.pageNumber || 1;
+        const pageSize = queryParams.pageSize || 10;
+        const sortBy = queryParams.sortBy || 'createdAt';
+        let sortDirection: SortDirection = 'desc';
+        if(String(queryParams.sortDirection) === 'asc')
+            sortDirection = 'asc';
+        return {
+            searchNameTerm: String(searchNameTerm),
+            pageNumber: Number(pageNumber),
+            pageSize: Number(pageSize),
+            sortBy: String(sortBy),
+            sortDirection: sortDirection
+        };
+    },
+    async getBlogsWithQueryParam(queryParams: QueryInputParamsModel) {
+        const searchParams = this.queryParamsValidation(queryParams);
         const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -29,7 +48,8 @@ export const queryRepository = {
     async returnAllBlogs () {
         return blogsCollection.find().project({_id: 0}).toArray();
     },
-    async getPotsWithQueryParamAndBlogId(searchParams: SearchParamsModel, blogId: string) {
+    async getPotsWithQueryParamAndBlogId(queryParams: QueryInputParamsModel, blogId: string) {
+        const searchParams = this.queryParamsValidation(queryParams);
         const posts = await postsCollection.find({blogId: blogId},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -53,7 +73,8 @@ export const queryRepository = {
             }))
         }
     },
-    async getPotsWithQueryParam(searchParams: SearchParamsModel) {
+    async getPotsWithQueryParam(queryParams: QueryInputParamsModel) {
+        const searchParams = this.queryParamsValidation(queryParams);
         const posts = await postsCollection.find({},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
