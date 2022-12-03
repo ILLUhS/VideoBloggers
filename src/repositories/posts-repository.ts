@@ -3,13 +3,13 @@ import {PostCreateModel} from "../models/post-create-model";
 import {PostUpdateModel} from "../models/post-update-model";
 
 export const postsRepository = {       //объект с методами управления данными
-    async deletePostByTd(id: string): Promise<boolean> {
+    async deleteByTd(id: string): Promise<boolean> {
         return (await postsCollection.deleteOne({id: id})).deletedCount === 1;
     },
-    async createPost(newPost: PostCreateModel): Promise<boolean> {
+    async create(newPost: PostCreateModel): Promise<boolean> {
         return (await postsCollection.insertOne({...newPost})).acknowledged;
     },
-    async updatePost(updatePost: PostUpdateModel): Promise<boolean> {
+    async update(updatePost: PostUpdateModel): Promise<boolean> {
         return (await postsCollection.updateOne({id: updatePost.id}, { $set:{
                 title: updatePost.title,
                 shortDescription: updatePost.shortDescription,
@@ -18,7 +18,7 @@ export const postsRepository = {       //объект с методами упр
                 blogName: updatePost.blogName
             }})).matchedCount === 1;
     },
-    async deleteAllPosts(): Promise<boolean> {
+    async deleteAll(): Promise<boolean> {
         return (await postsCollection.deleteMany({})).acknowledged;
     }
 }

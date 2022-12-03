@@ -12,14 +12,20 @@ export const usersService = {
             email: email,
             createdAt: new Date().toISOString()
         }
-        const result = await usersRepository.createUser(newUser);
+        const result = await usersRepository.create(newUser);
         return result ? newUser.id : null;
     },
+    async cechCredentials(loginOrEmail: string, password: string) {
+        const user = await usersRepository.findByField(await this.isLoginOrEmail(loginOrEmail), loginOrEmail);
+    },
+    async isLoginOrEmail(loginOrEmail: string) {
+        return loginOrEmail.includes('@') ? 'email' : 'login';
+    },
     async deleteUserById(id: string) {
-        return await usersRepository.deleteUserById(id);
+        return await usersRepository.deleteById(id);
     },
     async deleteAllUsers() {
-        return await usersRepository.deleteAllUsers();
+        return await usersRepository.deleteAll();
     },
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt);

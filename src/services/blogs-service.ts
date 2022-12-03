@@ -2,8 +2,8 @@ import {blogsRepository} from "../repositories/blogs-repository";
 import {postsService} from "./posts-service";
 import { v4 as uuidv4 } from 'uuid'
 export const blogsService = {       //объект с методами управления данными
-    async deleteBlogByTd(id: string) {
-        return await blogsRepository.deleteBlogByTd(id);
+    async findBlogById(id: string) {
+        return await blogsRepository.findById(id);
     },
     async createBlog(name: string, description: string, websiteUrl: string) {
         const newBlog = {
@@ -13,7 +13,7 @@ export const blogsService = {       //объект с методами упра�
             websiteUrl: websiteUrl,
             createdAt: new Date().toISOString()
         };
-        const result = await blogsRepository.createBlog(newBlog);
+        const result = await blogsRepository.create(newBlog);
         return result ? newBlog.id : null;
     },
     async createPostByBlogId(title: string, shortDescription: string, content: string, blogId: string) {
@@ -26,9 +26,12 @@ export const blogsService = {       //объект с методами упра�
             description: description,
             websiteUrl: websiteUrl
         }
-        return blogsRepository.updateBlog(updateBlog);
+        return blogsRepository.update(updateBlog);
+    },
+    async deleteBlogByTd(id: string) {
+        return await blogsRepository.deleteByTd(id);
     },
     async deleteAllBlogs() {
-        return await blogsRepository.deleteAllBlogs()
+        return await blogsRepository.deleteAll()
     }
 };
