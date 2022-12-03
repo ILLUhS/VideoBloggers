@@ -1,7 +1,8 @@
-import {blogsCollection, BlogsType, postsCollection} from "./db";
+import {blogsCollection, postsCollection} from "./db";
 import {SearchParamsModel} from "../models/search-params-model";
 import {QueryInputParamsModel} from "../models/query-input-params-model";
 import {SortDirection} from "mongodb";
+import {BlogsViewModel} from "../models/blogs-view-model";
 export const queryRepository = {
     queryParamsValidation(queryParams: QueryInputParamsModel): SearchParamsModel {
         const searchNameTerm = queryParams.searchNameTerm || '';
@@ -42,11 +43,23 @@ export const queryRepository = {
             }))
         }
     },
-    async findBlogById(id: string): Promise<BlogsType | null> {
-        return blogsCollection.findOne({id: id}, {projection:{_id:0}})  //object || undefined
+    async findBlogById(id: string): Promise<BlogsViewModel | null> {
+        return blogsCollection.findOne({id: id}, {projection: {
+                _id: 0,
+                id: 1,
+                name: 1,
+                description: 1,
+                websiteUrl: 1
+            }});
     },
     async returnAllBlogs () {
-        return blogsCollection.find().project({_id: 0}).toArray();
+        return blogsCollection.find().project({
+            _id: 0,
+            id: 1,
+            name: 1,
+            description: 1,
+            websiteUrl: 1
+        }).toArray();
     },
     async getPotsWithQueryParamAndBlogId(queryParams: QueryInputParamsModel, blogId: string) {
         const searchParams = this.queryParamsValidation(queryParams);
@@ -99,9 +112,27 @@ export const queryRepository = {
         }
     },
     async returnAllPosts() {
-        return postsCollection.find().project({_id: 0}).toArray();
+        return postsCollection.find().project({
+            _id: 0,
+            id: 1,
+            title: 1,
+            shortDescription: 1,
+            content: 1,
+            blogId: 1,
+            blogName: 1,
+            createdAt: 1
+        }).toArray();
     },
     async findPostById(id: string) {
-        return postsCollection.findOne({id: id}, {projection:{_id:0}}); //object || undefined
+        return postsCollection.findOne({id: id}, {projection: {
+                _id: 0,
+                id: 1,
+                title: 1,
+                shortDescription: 1,
+                content: 1,
+                blogId: 1,
+                blogName: 1,
+                createdAt: 1
+            }});
     }
-}
+};

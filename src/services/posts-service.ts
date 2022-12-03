@@ -1,6 +1,7 @@
 import {postsRepository} from "../repositories/posts-repository";
 import {queryRepository} from "../repositories/query-repository";
 import {blogsRepository} from "../repositories/blogs-repository";
+import {v4 as uuidv4} from "uuid";
 
 export const postsService = {
     async deletePostByTd(id: string) {
@@ -10,7 +11,7 @@ export const postsService = {
         const currentBlog = await queryRepository.findBlogById(blogId);
         if(currentBlog) {
             const newPost = {
-                id: String((new Date()).valueOf()),
+                id: uuidv4(),
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
@@ -18,10 +19,10 @@ export const postsService = {
                 blogName: currentBlog.name,
                 createdAt: new Date().toISOString()
             };
-            await postsRepository.createPost(newPost);
-            return newPost;
+            const result = await postsRepository.createPost(newPost);
+            return result ? newPost.id : '';
         }
-        return false;
+        return null;
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
         const foundBlog = await blogsRepository.findBlogById(blogId);
@@ -38,7 +39,7 @@ export const postsService = {
         }
         return false;
     },
-    async allPostsDelete() {
-        await postsRepository.allPostsDelete();
+    async deleteAllPosts() {
+        return await postsRepository.deleteAllPosts();
     }
-}
+};

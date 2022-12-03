@@ -6,8 +6,8 @@ export const postsRepository = {       //объект с методами упр
     async deletePostByTd(id: string): Promise<boolean> {
         return (await postsCollection.deleteOne({id: id})).deletedCount === 1;
     },
-    async createPost(newPost: PostCreateModel): Promise<void> {
-        await postsCollection.insertOne({...newPost});
+    async createPost(newPost: PostCreateModel): Promise<boolean> {
+        return (await postsCollection.insertOne({...newPost})).acknowledged;
     },
     async updatePost(updatePost: PostUpdateModel): Promise<boolean> {
         return (await postsCollection.updateOne({id: updatePost.id}, { $set:{
@@ -18,7 +18,7 @@ export const postsRepository = {       //объект с методами упр
                 blogName: updatePost.blogName
             }})).matchedCount === 1;
     },
-    async allPostsDelete(): Promise<void> {
-        await postsCollection.deleteMany({})
+    async deleteAllPosts(): Promise<boolean> {
+        return (await postsCollection.deleteMany({})).acknowledged;
     }
 }

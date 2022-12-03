@@ -1,4 +1,4 @@
-export type PostsCollectionType = {
+export type PostsCollectionModel = {
     id: string;
     title: string;
     shortDescription: string;
