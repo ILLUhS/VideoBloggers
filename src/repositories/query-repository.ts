@@ -69,7 +69,8 @@ export const queryRepository = {
                 id: 1,
                 name: 1,
                 description: 1,
-                websiteUrl: 1
+                websiteUrl: 1,
+                createdAt: 1
             }});
     },
     async returnAllBlogs () {
@@ -78,7 +79,8 @@ export const queryRepository = {
             id: 1,
             name: 1,
             description: 1,
-            websiteUrl: 1
+            websiteUrl: 1,
+            createdAt: 1
         }).toArray();
     },
     async getPotsWithQueryParamAndBlogId(queryParams: QueryInputParamsModel, blogId: string) {

@@ -10,7 +10,8 @@ export const blogsRepository = { //объект с методами управл
                 id: 1,
                 name: 1,
                 description: 1,
-                websiteUrl: 1
+                websiteUrl: 1,
+                createdAt: 1
             }});
     },
     async deleteByTd(id: string): Promise<boolean> {
