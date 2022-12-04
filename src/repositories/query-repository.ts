@@ -1,8 +1,10 @@
-import {blogsCollection, postsCollection} from "./db";
+import {blogsCollection, postsCollection, usersCollection} from "./db";
 import {SearchParamsModel} from "../models/search-params-model";
 import {QueryInputParamsModel} from "../models/query-input-params-model";
 import {SortDirection} from "mongodb";
 import {BlogsViewModel} from "../models/blogs-view-model";
+import {QueryUsersInputParamsModel} from "../models/query-users-input-params-model";
+import {SearchUsersParamsModel} from "../models/search-users-params-model";
 export const queryRepository = {
     queryParamsValidation(queryParams: QueryInputParamsModel): SearchParamsModel {
         const searchNameTerm = queryParams.searchNameTerm || '';
@@ -14,6 +16,24 @@ export const queryRepository = {
             sortDirection = 'asc';
         return {
             searchNameTerm: String(searchNameTerm),
+            pageNumber: Number(pageNumber),
+            pageSize: Number(pageSize),
+            sortBy: String(sortBy),
+            sortDirection: sortDirection
+        };
+    },
+    queryUsersParamsValidation(queryUsersParams: QueryUsersInputParamsModel): SearchUsersParamsModel {
+        const searchLoginTerm = queryUsersParams.searchLoginTerm || '';
+        const searchEmailTerm = queryUsersParams.searchEmailTerm || '';
+        const pageNumber = queryUsersParams.pageNumber || 1;
+        const pageSize = queryUsersParams.pageSize || 10;
+        const sortBy = queryUsersParams.sortBy || 'createdAt';
+        let sortDirection: SortDirection = 'desc';
+        if(String(queryUsersParams.sortDirection) === 'asc')
+            sortDirection = 'asc';
+        return {
+            searchLoginTerm: String(searchLoginTerm),
+            searchEmailTerm: String(searchEmailTerm),
             pageNumber: Number(pageNumber),
             pageSize: Number(pageSize),
             sortBy: String(sortBy),
@@ -132,6 +152,43 @@ export const queryRepository = {
                 content: 1,
                 blogId: 1,
                 blogName: 1,
+                createdAt: 1
+            }});
+    },
+    async getUsersWithQueryParam(queryUsersParams: QueryUsersInputParamsModel) {
+        const searchParams = this.queryUsersParamsValidation(queryUsersParams);
+        const users = await usersCollection.find({$or:
+                [{login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+                    {email: {$regex: searchParams.searchEmailTerm, $options: 'i'}}]
+            },
+            {
+                skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
+                limit: searchParams.pageSize,
+                sort: [[searchParams.sortBy, searchParams.sortDirection]]
+            }).project({_id: 0}).toArray();
+        const usersCount = await usersCollection.countDocuments({
+            login: { $regex:  searchParams.searchLoginTerm, $options: 'i'},
+            email: { $regex:  searchParams.searchEmailTerm, $options: 'i'}
+        });
+        return {
+            pagesCount: Math.ceil(usersCount / searchParams.pageSize),
+            page: searchParams.pageNumber,
+            pageSize: searchParams.pageSize,
+            totalCount: usersCount,
+            items: users.map(user => ({
+                id: user.id,
+                login: user.login,
+                email: user.email,
+                createdAt: user.createdAt
+            }))
+        }
+    },
+    async findUserById(id: string) {
+        return usersCollection.findOne({id: id}, {projection: {
+                _id: 0,
+                id: 1,
+                login: 1,
+                email: 1,
                 createdAt: 1
             }});
     }

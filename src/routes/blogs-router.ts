@@ -18,20 +18,17 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
 });
 blogsRouter.get('/:id', async (req, res) => {
         const foundBlog = await queryRepository.findBlogById(String(req.params.id));
-        if(foundBlog) {
-                return res.status(200).json(foundBlog);
-        }
-        else {
-                return res.status(404).send('If specified blog doesn\'t exists');
-        }
+        if(foundBlog)
+            return res.status(200).json(foundBlog);
+        else
+            return res.status(404).send('If specified blog doesn\'t exists');
 });
 blogsRouter.get('/:id/posts', async (req: Request, res: Response) => {
         const foundPosts = await queryRepository.getPotsWithQueryParamAndBlogId(
             req.query,
             String(req.params.id));
-        if(foundPosts.items.length > 0) {
+        if(foundPosts.items.length > 0)
             return res.status(200).json(foundPosts);
-        }
         else
             return res.status(404).send('If specified blog doesn\'t exists');
 });
