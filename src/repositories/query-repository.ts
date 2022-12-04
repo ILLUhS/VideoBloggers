@@ -160,17 +160,21 @@ export const queryRepository = {
     async getUsersWithQueryParam(queryUsersParams: QueryUsersInputParamsModel) {
         const searchParams = this.queryUsersParamsValidation(queryUsersParams);
         const users = await usersCollection.find({$or:
-                [{login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},
-                    {email: {$regex: searchParams.searchEmailTerm, $options: 'i'}}]
+                [
+                    {login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+                    {email: {$regex: searchParams.searchEmailTerm, $options: 'i'}}
+                ]
             },
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
                 limit: searchParams.pageSize,
                 sort: [[searchParams.sortBy, searchParams.sortDirection]]
             }).project({_id: 0}).toArray();
-        const usersCount = await usersCollection.countDocuments({
-            login: { $regex:  searchParams.searchLoginTerm, $options: 'i'},
-            email: { $regex:  searchParams.searchEmailTerm, $options: 'i'}
+        const usersCount = await usersCollection.countDocuments({$or:
+                [
+                    {login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+                    {email: {$regex: searchParams.searchEmailTerm, $options: 'i'}}
+                ]
         });
         return {
             pagesCount: Math.ceil(usersCount / searchParams.pageSize),
