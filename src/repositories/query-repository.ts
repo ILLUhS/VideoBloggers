@@ -5,6 +5,7 @@ import {SortDirection} from "mongodb";
 import {BlogsViewModel} from "../models/blogs-view-model";
 import {QueryUsersInputParamsModel} from "../models/query-users-input-params-model";
 import {SearchUsersParamsModel} from "../models/search-users-params-model";
+import {UserViewModel} from "../models/user-view-model";
 export const queryRepository = {
     queryParamsValidation(queryParams: QueryInputParamsModel): SearchParamsModel {
         const searchNameTerm = queryParams.searchNameTerm || '';
@@ -189,7 +190,7 @@ export const queryRepository = {
             }))
         }
     },
-    async findUserById(id: string) {
+    async findUserById(id: string): Promise<UserViewModel | null> {
         return usersCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,

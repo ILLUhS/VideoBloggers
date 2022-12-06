@@ -16,11 +16,11 @@ export const usersService = {
         return result ? newUser.id : null;
     },
     async cechCredentials(loginOrEmail: string, password: string) {
-        const user = await usersRepository.findByField(await this.isLoginOrEmail(loginOrEmail), loginOrEmail);
+        const user = await usersRepository.findByFieldWithHash(await this.isLoginOrEmail(loginOrEmail), loginOrEmail);
         if(!user)
-            return false;
+            return null;
         const passwordHash = await this._generateHash(password, user.passwordHash.substring(0,30))
-        return user.passwordHash === passwordHash;
+        return user.passwordHash === passwordHash ? user.id : null;
     },
     async isLoginOrEmail(loginOrEmail: string) {
         return loginOrEmail.includes('@') ? 'email' : 'login';

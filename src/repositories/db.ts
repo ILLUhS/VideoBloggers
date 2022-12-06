@@ -1,10 +1,11 @@
 import {MongoClient} from "mongodb";
-import * as dotenv from 'dotenv'
+//import * as dotenv from 'dotenv';
 import {BlogsCollectionModel} from "../models/blogs-collection-model";
 import {PostsCollectionModel} from "../models/posts-collection-model";
 import {UsersCollectionModel} from "../models/users-collection-model";
-dotenv.config();
-const mongoURI = process.env.mongoURL //"mongodb://127.0.0.1:27017"
+import {settings} from "../config/settings";
+//dotenv.config();
+const mongoURI = settings.MONGO_URL
 if(!mongoURI) {
     throw Error('Bad URL')
 }
