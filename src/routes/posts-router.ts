@@ -1,13 +1,13 @@
 import {Request, Response, Router} from "express";
 import {authorizationBasicGuardMiddleware} from "../middlewares/authorization-basic-guard-middleware";
 import {
-    blogIdPostValidation,
-    contentPostValidation, errorsValidation,
+    blogIdPostValidation, contentCommentValidation,
+    contentPostValidation, errorsValidation, postIdIsExist,
     shortDescriptionPostValidation, titlePostValidation
 } from "../middlewares/input-validation-middleware";
 import {queryRepository} from "../repositories/query-repository";
 import {postsService} from "../services/posts-service";
-
+import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-bearer-guard-middleware";
 
 export const postsRouter = Router({});
 
@@ -49,4 +49,13 @@ postsRouter.put('/:id', authorizationBasicGuardMiddleware, titlePostValidation, 
             return res.sendStatus(204);
         else
             return res.sendStatus(404);
+});
+postsRouter.post('/:id/comments', authorizationBearerGuardMiddleware, postIdIsExist,
+    contentCommentValidation, errorsValidation, async (req: Request, res: Response) => {
+        const createdCommentId = await postsService.createCommentByPostId(String(req.body.content),
+            req.user!.id, req.user!.login);
+        if(createdCommentId)
+            return res.status(201).json(await queryRepository.findCommentById(createdCommentId));
+        else
+            return res.status(409).send('Database write error');
 });

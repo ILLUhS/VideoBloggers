@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {body, validationResult, CustomValidator, oneOf} from 'express-validator';
 import {blogsService} from "../services/blogs-service";
 import {usersService} from "../services/users-service";
+import {postsService} from "../services/posts-service";
 
 type errorsMessagesType = {
     message: string;
@@ -12,11 +13,17 @@ type errorsType = {
 };
 const isValidBlogTd: CustomValidator = async blogId => {
     const blog = await blogsService.findBlogById(String(blogId));
-    if (blog) {
+    if (blog)
         return true;
-    } else {
+    else
         throw new Error('Blog with blogId does not exist');
-    }
+};
+export const postIdIsExist = async (req: Request, res: Response, next: NextFunction) => {
+    const post = await postsService.findPostById(String(req.params.id));
+    if(post)
+        return next();
+    else
+        return res.sendStatus(404);
 };
 const loginIsFree: CustomValidator = async login => {
     const checkLogin = await usersService.findUser('login', login);
@@ -48,6 +55,7 @@ export const loginValidation = body('login').isLength({min: 3, max: 10})
 export const emailValidation = body('email')
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').custom(emailIsFree);
 export const passwordValidation = body('password').isLength({min: 6, max: 20});
+export const contentCommentValidation = body('content').trim().isLength({min: 20, max: 300});
 
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
     const errors: errorsType = {errorsMessages: []};

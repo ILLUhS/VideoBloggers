@@ -1,4 +1,4 @@
-import {blogsCollection, postsCollection, usersCollection} from "./db";
+import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "./db";
 import {SearchParamsModel} from "../models/search-params-model";
 import {QueryInputParamsModel} from "../models/query-input-params-model";
 import {SortDirection} from "mongodb";
@@ -199,7 +199,7 @@ export const queryRepository = {
                 createdAt: 1
             }});
     },
-    async findAuthUserById(id: string){
+    async findAuthUserById(id: string) {
         const foundUser = await usersCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
@@ -211,5 +211,15 @@ export const queryRepository = {
             login: foundUser.login,
             userId: foundUser.id
         } : null
+    },
+    async findCommentById(id: string) {
+        return commentsCollection.findOne({id: id}, {projection:{
+                _id: 0,
+                id: 1,
+                content: 1,
+                userId: 1,
+                userLogin: 1,
+                createdAt: 1
+            }});
     }
 };

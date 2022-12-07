@@ -17,11 +17,9 @@ authRouter.post('/login', loginOrEmailValidation, errorsValidation,
         return res.sendStatus(401);
 });
 authRouter.get('/me', authorizationBearerGuardMiddleware, async (req: Request, res: Response) => {
-    const user = req.user!;
-    const userForResponse = {
-        email: user.email,
-        login: user.login,
-        userId: user.id
-    };
-    return res.status(200).json(userForResponse);
+    return res.status(200).json({
+        email: req.user!.email,
+        login: req.user!.login,
+        userId: req.user!.id
+    });
 });
