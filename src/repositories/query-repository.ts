@@ -198,5 +198,18 @@ export const queryRepository = {
                 email: 1,
                 createdAt: 1
             }});
+    },
+    async findAuthUserById(id: string){
+        const foundUser = await usersCollection.findOne({id: id}, {projection: {
+                _id: 0,
+                id: 1,
+                login: 1,
+                email: 1
+            }});
+        return foundUser ? {
+            email: foundUser.email,
+            login: foundUser.login,
+            userId: foundUser.id
+        } : null
     }
 };

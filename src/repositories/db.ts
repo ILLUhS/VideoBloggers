@@ -1,10 +1,8 @@
 import {MongoClient} from "mongodb";
-//import * as dotenv from 'dotenv';
 import {BlogsCollectionModel} from "../models/blogs-collection-model";
 import {PostsCollectionModel} from "../models/posts-collection-model";
 import {UsersCollectionModel} from "../models/users-collection-model";
 import {settings} from "../config/settings";
-//dotenv.config();
 const mongoURI = settings.MONGO_URL
 if(!mongoURI) {
     throw Error('Bad URL')

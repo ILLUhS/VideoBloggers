@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-middleware";
+import {authorizationBasicGuardMiddleware} from "../middlewares/authorization-basic-guard-middleware";
 import {queryRepository} from "../repositories/query-repository";
 import {
     emailValidation,
@@ -10,10 +10,10 @@ import {
 import {usersService} from "../services/users-service";
 
 export const usersRouter = Router({});
-usersRouter.get('/', authorizationGuardMiddleware, async (req: Request, res: Response) => {
+usersRouter.get('/', authorizationBasicGuardMiddleware, async (req: Request, res: Response) => {
     return res.status(200).json(await queryRepository.getUsersWithQueryParam(req.query));
 });
-usersRouter.post('/', authorizationGuardMiddleware, loginValidation,
+usersRouter.post('/', authorizationBasicGuardMiddleware, loginValidation,
     passwordValidation, emailValidation, errorsValidation,
     async (req: Request, res: Response) => {
     const createdUserId = await usersService.createUser(
@@ -26,7 +26,7 @@ usersRouter.post('/', authorizationGuardMiddleware, loginValidation,
     else
         return res.status(409).send('Database write error');
 });
-usersRouter.delete('/:id', authorizationGuardMiddleware, async (req: Request, res: Response) => {
+usersRouter.delete('/:id', authorizationBasicGuardMiddleware, async (req: Request, res: Response) => {
     const deletedUser = await usersService.deleteUserById(String(req.params.id));
     if(deletedUser)
         return res.sendStatus(204);

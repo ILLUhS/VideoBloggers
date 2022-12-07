@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {authorizationGuardMiddleware} from "../middlewares/authorization-guard-middleware";
+import {authorizationBasicGuardMiddleware} from "../middlewares/authorization-basic-guard-middleware";
 import {
         contentPostValidation,
         descriptionBlogValidation,
@@ -32,14 +32,14 @@ blogsRouter.get('/:id/posts', async (req: Request, res: Response) => {
         else
             return res.status(404).send('If specified blog doesn\'t exists');
 });
-blogsRouter.delete('/:id', authorizationGuardMiddleware, async (req, res) => {
+blogsRouter.delete('/:id', authorizationBasicGuardMiddleware, async (req, res) => {
         const deletedBlog = await blogsService.deleteBlogByTd(String(req.params.id));
         if(deletedBlog)
             return res.sendStatus(204);
         else
             return res.sendStatus(404);
 });
-blogsRouter.post('/', authorizationGuardMiddleware, nameBlogValidation,
+blogsRouter.post('/', authorizationBasicGuardMiddleware, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
     async (req: Request, res: Response) => {
         const createdBlogId = await blogsService.createBlog(String(req.body.name),
@@ -49,7 +49,7 @@ blogsRouter.post('/', authorizationGuardMiddleware, nameBlogValidation,
         else
             return res.status(409).send('Database write error');
 });
-blogsRouter.post('/:id/posts', authorizationGuardMiddleware,
+blogsRouter.post('/:id/posts', authorizationBasicGuardMiddleware,
     titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, errorsValidation,
     async (req: Request, res: Response) => {
@@ -66,7 +66,7 @@ blogsRouter.post('/:id/posts', authorizationGuardMiddleware,
         else
             return res.status(404).send('If specified blog doesn\'t exists');
 });
-blogsRouter.put('/:id', authorizationGuardMiddleware, nameBlogValidation,
+blogsRouter.put('/:id', authorizationBasicGuardMiddleware, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
     async (req: Request, res: Response) => {
             const updatedBlog = await blogsService.updateBlog(String(req.params.id), String(req.body.name),
