@@ -33,12 +33,10 @@ postsRouter.post('/', authorizationBasicGuardMiddleware, titlePostValidation, sh
     async (req: Request, res: Response) => {
         const createdPostId = await postsService.createPost(String(req.body.title), String(req.body.shortDescription),
             String(req.body.content), String(req.body.blogId));
-        if(createdPostId && createdPostId.length > 0)
+        if(createdPostId)
             return res.status(201).json(await queryRepository.findPostById(createdPostId))
-        else if(createdPostId && createdPostId.length === 0)
-            return res.status(409).send('Database write error');
         else
-            return res.status(404).send('If specified blog doesn\'t exists');
+            return res.status(409).send('Database write error');
 });
 postsRouter.put('/:id', authorizationBasicGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, blogIdPostValidation, errorsValidation,

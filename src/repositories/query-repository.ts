@@ -6,6 +6,7 @@ import {BlogsViewModel} from "../models/blogs-view-model";
 import {QueryUsersInputParamsModel} from "../models/query-users-input-params-model";
 import {SearchUsersParamsModel} from "../models/search-users-params-model";
 import {UserViewModel} from "../models/user-view-model";
+import {CommentsViewModel} from "../models/comments-view-model";
 export const queryRepository = {
     queryParamsValidation(queryParams: QueryInputParamsModel): SearchParamsModel {
         const searchNameTerm = queryParams.searchNameTerm || '';
@@ -212,7 +213,7 @@ export const queryRepository = {
             userId: foundUser.id
         } : null
     },
-    async findCommentById(id: string) {
+    async findCommentById(id: string): Promise<CommentsViewModel | null> {
         return commentsCollection.findOne({id: id}, {projection:{
                 _id: 0,
                 id: 1,

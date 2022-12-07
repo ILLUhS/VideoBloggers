@@ -24,7 +24,7 @@ export const postsService = {
                 createdAt: new Date().toISOString()
             };
             const result = await postsRepository.create(newPost);
-            return result ? newPost.id : '';
+            return result ? newPost.id : null;
         }
         return null;
     },

@@ -18,6 +18,13 @@ const isValidBlogTd: CustomValidator = async blogId => {
     else
         throw new Error('Blog with blogId does not exist');
 };
+export const blogIdIsExist = async (req: Request, res: Response, next: NextFunction) => {
+    const post = await blogsService.findBlogById(String(req.params.id));
+    if(post)
+        return next();
+    else
+        return res.sendStatus(404);
+};
 export const postIdIsExist = async (req: Request, res: Response, next: NextFunction) => {
     const post = await postsService.findPostById(String(req.params.id));
     if(post)
