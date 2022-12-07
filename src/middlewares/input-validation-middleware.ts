@@ -3,6 +3,7 @@ import {body, validationResult, CustomValidator, oneOf} from 'express-validator'
 import {blogsService} from "../services/blogs-service";
 import {usersService} from "../services/users-service";
 import {postsService} from "../services/posts-service";
+import {QueryParamsModel} from "../models/query-params-model";
 
 type errorsMessagesType = {
     message: string;
@@ -10,6 +11,21 @@ type errorsMessagesType = {
 };
 type errorsType = {
     errorsMessages: errorsMessagesType[];
+};
+export const queryParamsValidation = async (req: Request, res: Response, next: NextFunction) => {
+    const params: QueryParamsModel = {
+        searchNameTerm: String(req.query.searchNameTerm) || '',
+        searchLoginTerm: String(req.query.searchLoginTerm) || '',
+        searchEmailTerm: String(req.query.searchEmailTerm) || '',
+        pageNumber: Number(req.query.pageNumber) || 1,
+        pageSize: Number(req.query.pageSize) || 10,
+        sortBy: String(req.query.sortBy) || 'createdAt',
+        sortDirection: 'desc'
+    };
+    if(String(req.query.sortDirection) === 'asc')
+        params.sortDirection = 'asc';
+    req.searchParams = params;
+    return next();
 };
 const isValidBlogTd: CustomValidator = async blogId => {
     const blog = await blogsService.findBlogById(String(blogId));
