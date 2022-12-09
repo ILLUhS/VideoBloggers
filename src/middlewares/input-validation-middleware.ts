@@ -5,23 +5,31 @@ import {usersService} from "../services/users-service";
 import {postsService} from "../services/posts-service";
 import {QueryParamsModel} from "../models/query-params-model";
 import {ErrorsType} from "../types/errors-type";
+import {SortDirection} from "mongodb";
 
 export const queryParamsValidation = async (req: Request, res: Response, next: NextFunction) => {
+    const searchNameTerm = req.query.searchNameTerm || '';
+    const searchLoginTerm = req.query.searchLoginTerm || '';
+    const searchEmailTerm = req.query.searchEmailTerm || '';
+    const pageNumber = req.query.pageNumber || 1;
+    const pageSize = req.query.pageSize || 10;
+    const sortBy = req.query.sortBy || 'createdAt';
+    let sortDirection: SortDirection = 'desc';
+    if(String(req.query.sortDirection) === 'asc')
+        sortDirection = 'asc';
     const params: QueryParamsModel = {
-        searchNameTerm: String(req.query.searchNameTerm) || '',
-        searchLoginTerm: String(req.query.searchLoginTerm) || '',
-        searchEmailTerm: String(req.query.searchEmailTerm) || '',
-        pageNumber: Number(req.query.pageNumber) || 1,
-        pageSize: Number(req.query.pageSize) || 10,
-        sortBy: String(req.query.sortBy) || 'createdAt',
-        sortDirection: 'desc'
+        searchNameTerm: String(searchNameTerm),
+        searchLoginTerm: String(searchLoginTerm),
+        searchEmailTerm: String(searchEmailTerm),
+        pageNumber: Number(pageNumber),
+        pageSize: Number(pageSize),
+        sortBy: String(sortBy),
+        sortDirection: sortDirection
     };
     if(params.pageNumber < 1)
         return res.status(400).send('Invalid pageNumber');
     if(params.pageSize < 1)
         return res.status(400).send('Invalid pageSize');
-    if(String(req.query.sortDirection) === 'asc')
-        params.sortDirection = 'asc';
     req.searchParams = params;
     return next();
 };
