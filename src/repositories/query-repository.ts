@@ -1,49 +1,10 @@
 import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "./db";
-import {SearchParamsModel} from "../models/search-params-model";
-import {QueryInputParamsModel} from "../models/query-input-params-model";
-import {SortDirection} from "mongodb";
 import {BlogsViewModel} from "../models/blogs-view-model";
-import {QueryUsersInputParamsModel} from "../models/query-users-input-params-model";
-import {SearchUsersParamsModel} from "../models/search-users-params-model";
 import {UserViewModel} from "../models/user-view-model";
 import {CommentsViewModel} from "../models/comments-view-model";
+import {QueryParamsModel} from "../models/query-params-model";
 export const queryRepository = {
-    queryParamsValidation(queryParams: QueryInputParamsModel): SearchParamsModel {
-        const searchNameTerm = queryParams.searchNameTerm || '';
-        const pageNumber = queryParams.pageNumber || 1;
-        const pageSize = queryParams.pageSize || 10;
-        const sortBy = queryParams.sortBy || 'createdAt';
-        let sortDirection: SortDirection = 'desc';
-        if(String(queryParams.sortDirection) === 'asc')
-            sortDirection = 'asc';
-        return {
-            searchNameTerm: String(searchNameTerm),
-            pageNumber: Number(pageNumber),
-            pageSize: Number(pageSize),
-            sortBy: String(sortBy),
-            sortDirection: sortDirection
-        };
-    },
-    queryUsersParamsValidation(queryUsersParams: QueryUsersInputParamsModel): SearchUsersParamsModel {
-        const searchLoginTerm = queryUsersParams.searchLoginTerm || '';
-        const searchEmailTerm = queryUsersParams.searchEmailTerm || '';
-        const pageNumber = queryUsersParams.pageNumber || 1;
-        const pageSize = queryUsersParams.pageSize || 10;
-        const sortBy = queryUsersParams.sortBy || 'createdAt';
-        let sortDirection: SortDirection = 'desc';
-        if(String(queryUsersParams.sortDirection) === 'asc')
-            sortDirection = 'asc';
-        return {
-            searchLoginTerm: String(searchLoginTerm),
-            searchEmailTerm: String(searchEmailTerm),
-            pageNumber: Number(pageNumber),
-            pageSize: Number(pageSize),
-            sortBy: String(sortBy),
-            sortDirection: sortDirection
-        };
-    },
-    async getBlogsWithQueryParam(queryParams: QueryInputParamsModel) {
-        const searchParams = this.queryParamsValidation(queryParams);
+    async getBlogsWithQueryParam(searchParams: QueryParamsModel) {
         const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -85,8 +46,7 @@ export const queryRepository = {
             createdAt: 1
         }).toArray();
     },
-    async getPotsWithQueryParamAndBlogId(queryParams: QueryInputParamsModel, blogId: string) {
-        const searchParams = this.queryParamsValidation(queryParams);
+    async getPotsWithQueryParamAndBlogId(searchParams: QueryParamsModel, blogId: string) {
         const posts = await postsCollection.find({blogId: blogId},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -110,8 +70,7 @@ export const queryRepository = {
             }))
         }
     },
-    async getPotsWithQueryParam(queryParams: QueryInputParamsModel) {
-        const searchParams = this.queryParamsValidation(queryParams);
+    async getPotsWithQueryParam(searchParams: QueryParamsModel) {
         const posts = await postsCollection.find({},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -159,8 +118,7 @@ export const queryRepository = {
                 createdAt: 1
             }});
     },
-    async getUsersWithQueryParam(queryUsersParams: QueryUsersInputParamsModel) {
-        const searchParams = this.queryUsersParamsValidation(queryUsersParams);
+    async getUsersWithQueryParam(searchParams: QueryParamsModel) {
         const users = await usersCollection.find({$or:
                 [
                     {login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},

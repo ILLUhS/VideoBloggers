@@ -5,7 +5,7 @@ import {
     contentPostValidation,
     descriptionBlogValidation,
     errorsValidation,
-    nameBlogValidation,
+    nameBlogValidation, queryParamsValidation,
     shortDescriptionPostValidation,
     titlePostValidation,
     websiteUrlBlogValidation
@@ -14,8 +14,8 @@ import {queryRepository} from "../repositories/query-repository";
 import {blogsService} from "../services/blogs-service";
 export const blogsRouter = Router({});
 
-blogsRouter.get('/', async (req: Request, res: Response) => {
-        return res.status(200).json(await queryRepository.getBlogsWithQueryParam(req.query));
+blogsRouter.get('/', queryParamsValidation, async (req: Request, res: Response) => {
+        return res.status(200).json(await queryRepository.getBlogsWithQueryParam(req.searchParams!));
 });
 blogsRouter.get('/:id', async (req, res) => {
         const foundBlog = await queryRepository.findBlogById(String(req.params.id));
@@ -24,9 +24,9 @@ blogsRouter.get('/:id', async (req, res) => {
         else
             return res.status(404).send('If specified blog doesn\'t exists');
 });
-blogsRouter.get('/:id/posts', blogIdIsExist, async (req: Request, res: Response) => {
+blogsRouter.get('/:id/posts', queryParamsValidation, blogIdIsExist, async (req: Request, res: Response) => {
         const foundPosts = await queryRepository.getPotsWithQueryParamAndBlogId(
-            req.query,
+            req.searchParams!,
             String(req.params.id));
         return res.status(200).json(foundPosts);
 });

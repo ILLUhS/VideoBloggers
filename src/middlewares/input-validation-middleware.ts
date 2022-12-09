@@ -4,14 +4,8 @@ import {blogsService} from "../services/blogs-service";
 import {usersService} from "../services/users-service";
 import {postsService} from "../services/posts-service";
 import {QueryParamsModel} from "../models/query-params-model";
+import {ErrorsModel} from "../models/errors-model";
 
-type errorsMessagesType = {
-    message: string;
-    field: string;
-};
-type errorsType = {
-    errorsMessages: errorsMessagesType[];
-};
 export const queryParamsValidation = async (req: Request, res: Response, next: NextFunction) => {
     const params: QueryParamsModel = {
         searchNameTerm: String(req.query.searchNameTerm) || '',
@@ -81,7 +75,7 @@ export const passwordValidation = body('password').isLength({min: 6, max: 20});
 export const contentCommentValidation = body('content').trim().isLength({min: 20, max: 300});
 
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
-    const errors: errorsType = {errorsMessages: []};
+    const errors: ErrorsModel = {errorsMessages: []};
     for(let i = 0; i < validationResult(req).array({onlyFirstError: true}).length; i++) {
         errors.errorsMessages.push({
             message: "bad input",

@@ -5,13 +5,14 @@ import {
     emailValidation,
     errorsValidation,
     loginValidation,
-    passwordValidation
+    passwordValidation, queryParamsValidation
 } from "../middlewares/input-validation-middleware";
 import {usersService} from "../services/users-service";
 
 export const usersRouter = Router({});
-usersRouter.get('/', authorizationBasicGuardMiddleware, async (req: Request, res: Response) => {
-    return res.status(200).json(await queryRepository.getUsersWithQueryParam(req.query));
+usersRouter.get('/', authorizationBasicGuardMiddleware, queryParamsValidation,
+    async (req: Request, res: Response) => {
+    return res.status(200).json(await queryRepository.getUsersWithQueryParam(req.searchParams!));
 });
 usersRouter.post('/', authorizationBasicGuardMiddleware, loginValidation,
     passwordValidation, emailValidation, errorsValidation,

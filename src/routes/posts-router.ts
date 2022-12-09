@@ -2,7 +2,7 @@ import {Request, Response, Router} from "express";
 import {authorizationBasicGuardMiddleware} from "../middlewares/authorization-basic-guard-middleware";
 import {
     blogIdPostValidation, contentCommentValidation,
-    contentPostValidation, errorsValidation, postIdIsExist,
+    contentPostValidation, errorsValidation, postIdIsExist, queryParamsValidation,
     shortDescriptionPostValidation, titlePostValidation
 } from "../middlewares/input-validation-middleware";
 import {queryRepository} from "../repositories/query-repository";
@@ -11,8 +11,8 @@ import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-b
 
 export const postsRouter = Router({});
 
-postsRouter.get('/', async (req, res) => {
-    return res.status(200).json(await queryRepository.getPotsWithQueryParam(req.query));
+postsRouter.get('/', queryParamsValidation, async (req, res) => {
+    return res.status(200).json(await queryRepository.getPotsWithQueryParam(req.searchParams!));
 });
 postsRouter.get('/:id', async (req, res) => {
     const foundPost = await queryRepository.findPostById(String(req.params.id));
