@@ -28,8 +28,8 @@ export const postsService = {
         }
         return null;
     },
-    async createCommentByPostId(content: string, userId: string, userLogin: string) {
-        return await commentsService.createComment(content, userId, userLogin);
+    async createCommentByPostId(content: string, userId: string, userLogin: string, postId: string) {
+        return await commentsService.createComment(content, userId, userLogin, postId);
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
         const foundBlog = await blogsService.findBlogById(blogId);

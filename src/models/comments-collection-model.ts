@@ -4,4 +4,5 @@ export type CommentsCollectionModel = {
     userId: string;
     userLogin: string;
     createdAt: string;
+    postId: string;
 }

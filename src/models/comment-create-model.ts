@@ -4,4 +4,5 @@ export type CommentCreateModel = {
     userId: string;
     userLogin: string;
     createdAt: string;
+    postId: string;
 }

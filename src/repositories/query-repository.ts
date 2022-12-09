@@ -3,6 +3,8 @@ import {BlogsViewModel} from "../models/blogs-view-model";
 import {UserViewModel} from "../models/user-view-model";
 import {CommentsViewModel} from "../models/comments-view-model";
 import {QueryParamsModel} from "../models/query-params-model";
+import {FilterType} from "../types/filter-type";
+
 export const queryRepository = {
     async getBlogsWithQueryParam(searchParams: QueryParamsModel) {
         const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
@@ -10,7 +12,14 @@ export const queryRepository = {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
                 limit: searchParams.pageSize,
                 sort: [[searchParams.sortBy, searchParams.sortDirection]]
-            }).project({_id: 0}).toArray();
+            }).project({
+                _id: 0,
+                id: 1,
+                name: 1,
+                description: 1,
+                websiteUrl: 1,
+                createdAt: 1
+            }).toArray();
         const blogsCount = await blogsCollection.countDocuments({name:  new RegExp(searchParams.searchNameTerm, 'i')});
         return {
             pagesCount: Math.ceil(blogsCount / searchParams.pageSize),
@@ -36,7 +45,7 @@ export const queryRepository = {
                 createdAt: 1
             }});
     },
-    async returnAllBlogs () {
+    async returnAllBlogs() {
         return blogsCollection.find().project({
             _id: 0,
             id: 1,
@@ -46,38 +55,25 @@ export const queryRepository = {
             createdAt: 1
         }).toArray();
     },
-    async getPotsWithQueryParamAndBlogId(searchParams: QueryParamsModel, blogId: string) {
-        const posts = await postsCollection.find({blogId: blogId},
+    async getPotsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterType) {
+        if(!filter)
+            filter = {};
+        const posts = await postsCollection.find(filter,
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
                 limit: searchParams.pageSize,
                 sort: [[searchParams.sortBy, searchParams.sortDirection]]
-            }).project({_id: 0}).toArray();
-        const postsCount = await postsCollection.countDocuments({blogId:  blogId});
-        return {
-            pagesCount: Math.ceil(postsCount / searchParams.pageSize),
-            page: searchParams.pageNumber,
-            pageSize: searchParams.pageSize,
-            totalCount: postsCount,
-            items: posts.map(post => ({
-                id: post.id,
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                blogId: post.blogId,
-                blogName: post.blogName,
-                createdAt: post.createdAt
-            }))
-        }
-    },
-    async getPotsWithQueryParam(searchParams: QueryParamsModel) {
-        const posts = await postsCollection.find({},
-            {
-                skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
-                limit: searchParams.pageSize,
-                sort: [[searchParams.sortBy, searchParams.sortDirection]]
-            }).project({_id: 0}).toArray();
-        const postsCount = await postsCollection.countDocuments({});
+            }).project({
+                _id: 0,
+                id: 1,
+                title: 1,
+                shortDescription: 1,
+                content: 1,
+                blogId: 1,
+                blogName: 1,
+                createdAt: 1
+            }).toArray();
+        const postsCount = await postsCollection.countDocuments(filter);
         return {
             pagesCount: Math.ceil(postsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
@@ -129,7 +125,13 @@ export const queryRepository = {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
                 limit: searchParams.pageSize,
                 sort: [[searchParams.sortBy, searchParams.sortDirection]]
-            }).project({_id: 0}).toArray();
+            }).project({
+            _id: 0,
+            id: 1,
+            login: 1,
+            email: 1,
+            createdAt: 1
+            }).toArray();
         const usersCount = await usersCollection.countDocuments({$or:
                 [
                     {login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},
@@ -180,5 +182,36 @@ export const queryRepository = {
                 userLogin: 1,
                 createdAt: 1
             }});
+    },
+    async getCommentsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterType) {
+        if(!filter)
+            filter = {};
+        const comments = await commentsCollection.find(filter,
+            {
+                skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
+                limit: searchParams.pageSize,
+                sort: [[searchParams.sortBy, searchParams.sortDirection]]
+            }).project({
+            _id: 0,
+            id: 1,
+            content: 1,
+            userId: 1,
+            userLogin: 1,
+            createdAt: 1
+        }).toArray();
+        const commentsCount = await commentsCollection.countDocuments(filter);
+        return {
+            pagesCount: Math.ceil(commentsCount / searchParams.pageSize),
+            page: searchParams.pageNumber,
+            pageSize: searchParams.pageSize,
+            totalCount: commentsCount,
+            items: comments.map(comment => ({
+                id: comment.id,
+                content: comment.content,
+                userId: comment.userId,
+                userLogin: comment.userLogin,
+                createdAt: comment.createdAt
+            }))
+        }
     }
 };

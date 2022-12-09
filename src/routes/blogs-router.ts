@@ -22,12 +22,11 @@ blogsRouter.get('/:id', async (req, res) => {
         if(foundBlog)
             return res.status(200).json(foundBlog);
         else
-            return res.status(404).send('If specified blog doesn\'t exists');
+            return res.sendStatus(404);
 });
-blogsRouter.get('/:id/posts', queryParamsValidation, blogIdIsExist, async (req: Request, res: Response) => {
-        const foundPosts = await queryRepository.getPotsWithQueryParamAndBlogId(
-            req.searchParams!,
-            String(req.params.id));
+blogsRouter.get('/:id/posts', blogIdIsExist, queryParamsValidation, async (req: Request, res: Response) => {
+        const foundPosts = await queryRepository.getPotsWithQueryParam(
+            req.searchParams!, {blogId: String(req.params.id)});
         return res.status(200).json(foundPosts);
 });
 blogsRouter.delete('/:id', authorizationBasicGuardMiddleware, async (req, res) => {

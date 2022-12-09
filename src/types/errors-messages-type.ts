@@ -1,4 +1,4 @@
-export type ErrorsMessagesModel = {
+export type ErrorsMessagesType = {
     message: string;
     field: string;
 }

@@ -4,7 +4,7 @@ import {blogsService} from "../services/blogs-service";
 import {usersService} from "../services/users-service";
 import {postsService} from "../services/posts-service";
 import {QueryParamsModel} from "../models/query-params-model";
-import {ErrorsModel} from "../models/errors-model";
+import {ErrorsType} from "../types/errors-type";
 
 export const queryParamsValidation = async (req: Request, res: Response, next: NextFunction) => {
     const params: QueryParamsModel = {
@@ -16,6 +16,10 @@ export const queryParamsValidation = async (req: Request, res: Response, next: N
         sortBy: String(req.query.sortBy) || 'createdAt',
         sortDirection: 'desc'
     };
+    if(params.pageNumber < 1)
+        return res.status(400).send('Invalid pageNumber');
+    if(params.pageSize < 1)
+        return res.status(400).send('Invalid pageSize');
     if(String(req.query.sortDirection) === 'asc')
         params.sortDirection = 'asc';
     req.searchParams = params;
@@ -75,7 +79,7 @@ export const passwordValidation = body('password').isLength({min: 6, max: 20});
 export const contentCommentValidation = body('content').trim().isLength({min: 20, max: 300});
 
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
-    const errors: ErrorsModel = {errorsMessages: []};
+    const errors: ErrorsType = {errorsMessages: []};
     for(let i = 0; i < validationResult(req).array({onlyFirstError: true}).length; i++) {
         errors.errorsMessages.push({
             message: "bad input",
