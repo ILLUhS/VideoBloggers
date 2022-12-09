@@ -2,6 +2,7 @@ import {Router, Request, Response} from "express";
 import {queryRepository} from "../repositories/query-repository";
 import {commentsService} from "../services/comments-service";
 import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-bearer-guard-middleware";
+import {contentCommentValidation, errorsValidation} from "../middlewares/input-validation-middleware";
 
 export const commentsRouter = Router({})
 
@@ -18,6 +19,18 @@ commentsRouter.delete('/:id', authorizationBearerGuardMiddleware, async (req: Re
         return res.sendStatus(404);
     if(foundComment.userId === req.user!.id) {
         await commentsService.deleteCommentByTd(String(req.params.id));
+        return res.sendStatus(204);
+    }
+    else
+        return res.sendStatus(403);
+});
+commentsRouter.put('/:id', authorizationBearerGuardMiddleware, contentCommentValidation,
+    errorsValidation, async (req: Request, res: Response) => {
+    const foundComment = await queryRepository.findCommentById(String(req.params.id));
+    if(!foundComment)
+        return res.sendStatus(404);
+    if(foundComment.userId === req.user!.id) {
+        await commentsService.updateComment(String(req.params.id), String(req.body.content));
         return res.sendStatus(204);
     }
     else

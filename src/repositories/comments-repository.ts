@@ -1,5 +1,6 @@
 import {CommentCreateModel} from "../models/comment-create-model";
 import {commentsCollection} from "./db";
+import {CommentUpdateModel} from "../models/comment-update-model";
 
 export const commentsRepository = {
     async create(newComment: CommentCreateModel) {
@@ -10,5 +11,12 @@ export const commentsRepository = {
     },
     async deleteByTd(id: string): Promise<boolean> {
         return (await commentsCollection.deleteOne({id: id})).deletedCount === 1;
+    },
+    async update(updateComment: CommentUpdateModel): Promise<boolean> {
+        return (await commentsCollection.updateOne({id: updateComment.id}, {
+            $set: {
+                content: updateComment.content
+            }
+        })).matchedCount === 1;
     }
 }

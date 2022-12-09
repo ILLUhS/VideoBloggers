@@ -18,5 +18,12 @@ export const commentsService = {
     },
     async deleteCommentByTd(id: string) {
         return await commentsRepository.deleteByTd(id);
+    },
+    async updateComment(id: string, content: string) {
+        const updateComment = {
+            id: id,
+            content: content
+        }
+        return await commentsRepository.update(updateComment);
     }
 }
