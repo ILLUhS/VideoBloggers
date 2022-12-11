@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {settings} from "../config/settings";
 
-export const jwyService = {
+export const jwtService = {
     async createJWT(userId: String) {
         return jwt.sign({userId: userId}, settings.JWT_SECRET, {expiresIn: '7 days'});
     },
