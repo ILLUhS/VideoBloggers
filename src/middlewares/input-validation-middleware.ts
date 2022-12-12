@@ -55,14 +55,14 @@ export const postIdIsExist = async (req: Request, res: Response, next: NextFunct
         return res.sendStatus(404);
 };
 const loginIsFree: CustomValidator = async login => {
-    const checkLogin = await usersService.findUser('login', login);
+    const checkLogin = await usersService.findUser('accountData.login', login);
     if(checkLogin)
         throw new Error('Login already in use');
     else
         return true;
 };
 const emailIsFree: CustomValidator = async email => {
-    const checkLogin = await usersService.findUser('email', email);
+    const checkLogin = await usersService.findUser('accountData.email', email);
     if(checkLogin)
         throw new Error('Email already in use');
     else

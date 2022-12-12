@@ -117,8 +117,8 @@ export const queryRepository = {
     async getUsersWithQueryParam(searchParams: QueryParamsModel) {
         const users = await usersCollection.find({$or:
                 [
-                    {login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},
-                    {email: {$regex: searchParams.searchEmailTerm, $options: 'i'}}
+                    {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+                    {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
                 ]
             },
             {
@@ -128,14 +128,14 @@ export const queryRepository = {
             }).project({
             _id: 0,
             id: 1,
-            login: 1,
-            email: 1,
-            createdAt: 1
+            'accountData.login': 1,
+            'accountData.email': 1,
+            'accountData.createdAt': 1
             }).toArray();
         const usersCount = await usersCollection.countDocuments({$or:
                 [
-                    {login: {$regex: searchParams.searchLoginTerm, $options: 'i'}},
-                    {email: {$regex: searchParams.searchEmailTerm, $options: 'i'}}
+                    {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+                    {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
                 ]
         });
         return {
@@ -145,33 +145,41 @@ export const queryRepository = {
             totalCount: usersCount,
             items: users.map(user => ({
                 id: user.id,
-                login: user.login,
-                email: user.email,
-                createdAt: user.createdAt
+                login: user.accountData.login,
+                email: user.accountData.email,
+                createdAt: user.accountData.createdAt
             }))
         }
     },
     async findUserById(id: string): Promise<UserViewModel | null> {
-        return usersCollection.findOne({id: id}, {projection: {
+        const user = await usersCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
-                login: 1,
-                email: 1,
-                createdAt: 1
+                'accountData.login': 1,
+                'accountData.email': 1,
+                'accountData.createdAt': 1
             }});
+        return user ? {
+            id: user.id,
+            login: user.accountData.login,
+            email: user.accountData.email,
+            createdAt: user.accountData.createdAt
+        } : null;
     },
     async findAuthUserById(id: string) {
         const foundUser = await usersCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
-                login: 1,
-                email: 1
+                'accountData.login': 1,
+                'accountData.email': 1,
+                'accountData.createdAt': 1
             }});
         return foundUser ? {
-            email: foundUser.email,
-            login: foundUser.login,
-            userId: foundUser.id
-        } : null
+            id: foundUser.id,
+            login: foundUser.accountData.login,
+            email: foundUser.accountData.email,
+            createdAt: foundUser.accountData.createdAt
+        } : null;
     },
     async findCommentById(id: string): Promise<CommentsViewModel | null> {
         return commentsCollection.findOne({id: id}, {projection:{
