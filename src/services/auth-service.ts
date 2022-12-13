@@ -23,7 +23,15 @@ export const authService = {
             }
         };
         const result = await usersRepository.create(newUser);
-        await emailManager.sendEmailonfirmationMessage(newUser);
+        try {
+            await emailManager.sendEmailConfirmationMessage(newUser);
+            return result;
+        }
+        catch (e) {
+            console.log(e);
+            await usersRepository.deleteById(newUser.id);
+            return false;
+        }
     },
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt);

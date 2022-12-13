@@ -28,7 +28,10 @@ export const usersService = {
             .findByFieldWithHash(`accountData.${await this.isLoginOrEmail(loginOrEmail)}`, loginOrEmail);
         if(!user)
             return null;
-        const passwordHash = await this._generateHash(password, user.accountData.passwordHash.substring(0,30))
+        const passwordHash = await this._generateHash(password, user.accountData.passwordHash.substring(0,30));
+        const confirmed = user.emailConfirmation.isConfirmed;
+        if(!confirmed)
+            return null;
         return user.accountData.passwordHash === passwordHash ? user.id : null;
     },
     async isLoginOrEmail(loginOrEmail: string) {
