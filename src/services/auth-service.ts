@@ -53,11 +53,11 @@ export const authService = {
             return false;
         if(user.emailConfirmation.isConfirmed)
             return false;
-        if(add(new Date(), {hours: 24}) < add(user.emailConfirmation.expirationTime, {seconds: 120}))
-            return false;
+        /*if(add(new Date(), {hours: 24}) < add(user.emailConfirmation.expirationTime, {seconds: 120}))
+            return false;*/
         try {
             await emailManager.sendEmailConfirmationMessage(user);
-            await usersRepository.updateExpirationTime(user.id, add(new Date(), {hours: 24}));
+            //await usersRepository.updateExpirationTime(user.id, add(new Date(), {hours: 24}));
             return true;
         }
         catch (e) {
