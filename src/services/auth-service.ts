@@ -55,6 +55,8 @@ export const authService = {
             return false;
         /*if(add(new Date(), {hours: 24}) < add(user.emailConfirmation.expirationTime, {seconds: 120}))
             return false;*/
+        user.emailConfirmation.confirmationCode = uuidv4();
+        await usersRepository.updateConfirmationCode(user.id, user.emailConfirmation.confirmationCode);
         try {
             await emailManager.sendEmailConfirmationMessage(user);
             //await usersRepository.updateExpirationTime(user.id, add(new Date(), {hours: 24}));
