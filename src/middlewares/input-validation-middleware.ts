@@ -56,11 +56,18 @@ export const postIdIsExist = async (req: Request, res: Response, next: NextFunct
         return res.sendStatus(404);
 };
 const checkCode: CustomValidator = async code => {
-    const result = await authService.confirmEmail(code);
+    const result = await authService.confirmEmailByCode(code);
     if(result)
         return true;
     else
-        throw new Error('Confirmation code is bad');
+        throw new Error('Confirmation code is incorrect');
+};
+const checkEmail: CustomValidator = async email => {
+    const result = await authService.confirmEmailResend(email);
+    if(result)
+        return true;
+    else
+        throw new Error('Email is already confirmed or incorrect');
 }
 const loginIsFree: CustomValidator = async login => {
     const checkLogin = await usersService.findUser('accountData.login', login);
@@ -94,6 +101,7 @@ export const emailValidation = body('email')
 export const passwordValidation = body('password').isLength({min: 6, max: 20});
 export const contentCommentValidation = body('content').trim().isLength({min: 20, max: 300});
 export const checkConfirmationCode = body('code').custom(checkCode);
+export const checkEmailResending = body('email').custom(checkEmail);
 
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
     const errors: ErrorsType = {errorsMessages: []};

@@ -36,13 +36,33 @@ export const authService = {
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt);
     },
-    async confirmEmail(code: string): Promise<boolean> {
+    async confirmEmailByCode(code: string): Promise<boolean> {
         code = Buffer.from(code, "base64").toString("ascii");
         const user = await usersRepository.findByFieldWithHash('emailConfirmation.confirmationCode', code);
         if(!user)
             return false;
         if(user.emailConfirmation.expirationTime <= new Date())
             return false;
+        if(user.emailConfirmation.isConfirmed)
+            return false;
         return await usersRepository.updateConfirmation(user.id);
+    },
+    async confirmEmailResend(email: string): Promise<boolean> {
+        const user = await usersRepository.findByFieldWithHash('accountData.email', email);
+        if(!user)
+            return false;
+        if(user.emailConfirmation.isConfirmed)
+            return false;
+        if(add(new Date(), {hours: 24}) < add(user.emailConfirmation.expirationTime, {seconds: 120}))
+            return false;
+        try {
+            await emailManager.sendEmailConfirmationMessage(user);
+            await usersRepository.updateExpirationTime(user.id, add(new Date(), {hours: 24}));
+            return true;
+        }
+        catch (e) {
+            console.log(e);
+            return false;
+        }
     }
 }

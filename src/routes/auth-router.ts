@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {
-    checkConfirmationCode,
+    checkConfirmationCode, checkEmailResending,
     emailValidation,
     errorsValidation,
     loginOrEmailValidation,
@@ -43,6 +43,10 @@ authRouter.post('/registration', loginValidation, passwordValidation, emailValid
             return res.status(409).send('Database write error');
 });
 authRouter.post('/registration-confirmation', checkConfirmationCode, errorsValidation,
+    async (req: Request, res: Response) => {
+        return res.sendStatus(204);
+});
+authRouter.post('/registration-email-resending', checkEmailResending, errorsValidation,
     async (req: Request, res: Response) => {
         return res.sendStatus(204);
 });

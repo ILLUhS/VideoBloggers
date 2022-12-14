@@ -33,5 +33,9 @@ export const usersRepository = {
     async updateConfirmation(id: string): Promise<boolean> {
         return (await usersCollection.updateOne({id: id},
             { $set: { 'emailConfirmation.isConfirmed': true }})).matchedCount === 1
+    },
+    async updateExpirationTime(id: string, expirationTime: Date): Promise<boolean> {
+        return (await usersCollection.updateOne({id: id},
+            { $set: { 'emailConfirmation.expirationTime': expirationTime }})).matchedCount === 1
     }
 }
