@@ -29,5 +29,9 @@ export const usersRepository = {
     },
     async deleteAll() {
         return (await usersCollection.deleteMany({})).acknowledged;
+    },
+    async updateConfirmation(id: string): Promise<boolean> {
+        return (await usersCollection.updateOne({id: id},
+            { $set: { 'emailConfirmation.isConfirmed': true }})).matchedCount === 1
     }
 }

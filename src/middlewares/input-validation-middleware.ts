@@ -6,6 +6,7 @@ import {postsService} from "../services/posts-service";
 import {QueryParamsModel} from "../models/query-params-model";
 import {ErrorsType} from "../types/errors-type";
 import {SortDirection} from "mongodb";
+import {authService} from "../services/auth-service";
 
 export const queryParamsValidation = async (req: Request, res: Response, next: NextFunction) => {
     const searchNameTerm = req.query.searchNameTerm || '';
@@ -54,6 +55,13 @@ export const postIdIsExist = async (req: Request, res: Response, next: NextFunct
     else
         return res.sendStatus(404);
 };
+const checkCode: CustomValidator = async code => {
+    const result = await authService.confirmEmail(code);
+    if(result)
+        return true;
+    else
+        throw new Error('Confirmation code is bad');
+}
 const loginIsFree: CustomValidator = async login => {
     const checkLogin = await usersService.findUser('accountData.login', login);
     if(checkLogin)
@@ -85,12 +93,13 @@ export const emailValidation = body('email')
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$').custom(emailIsFree);
 export const passwordValidation = body('password').isLength({min: 6, max: 20});
 export const contentCommentValidation = body('content').trim().isLength({min: 20, max: 300});
+export const checkConfirmationCode = body('code').custom(checkCode);
 
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
     const errors: ErrorsType = {errorsMessages: []};
     for(let i = 0; i < validationResult(req).array({onlyFirstError: true}).length; i++) {
         errors.errorsMessages.push({
-            message: "bad input",
+            message: validationResult(req).array({onlyFirstError: true})[i].msg,
             field: validationResult(req).array({onlyFirstError: true})[i].param
         });
     }

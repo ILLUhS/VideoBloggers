@@ -35,5 +35,14 @@ export const authService = {
     },
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt);
+    },
+    async confirmEmail(code: string): Promise<boolean> {
+        code = Buffer.from(code, "base64").toString("ascii");
+        const user = await usersRepository.findByFieldWithHash('emailConfirmation.confirmationCode', code);
+        if(!user)
+            return false;
+        if(user.emailConfirmation.expirationTime <= new Date())
+            return false;
+        return await usersRepository.updateConfirmation(user.id);
     }
 }
