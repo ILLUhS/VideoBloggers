@@ -65,3 +65,6 @@ authRouter.post('/refresh-token', checkRefreshTokenMiddleware,  async (req: Requ
         path: '/auth/refresh-token',
     });
 });
+authRouter.post('/logout', checkRefreshTokenMiddleware,  async (req: Request, res: Response) => {
+    return res.sendStatus(204);
+});
