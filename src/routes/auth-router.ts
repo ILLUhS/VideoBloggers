@@ -20,11 +20,11 @@ authRouter.post('/login', loginOrEmailValidation, errorsValidation,
     if(checkingUserId) {
         const token = await jwtService.createAccessJWT(checkingUserId);
         const refreshToken = await jwtService.createRefreshJWT(checkingUserId);
-        return res.status(200).json({"accessToken": token}).cookie('refreshToken', refreshToken, {
+        return res.status(200).cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
             path: '/auth/refresh-token',
-        });
+        }).json({"accessToken": token});
     }
     else
         return res.sendStatus(401);
@@ -59,11 +59,11 @@ authRouter.post('/registration-email-resending', checkEmailResending, errorsVali
 authRouter.post('/refresh-token', checkRefreshTokenMiddleware,  async (req: Request, res: Response) => {
     const token = await jwtService.createAccessJWT(req.user!.id);
     const refreshToken = await jwtService.createRefreshJWT(req.user!.id);
-    return res.status(200).json({"accessToken": token}).cookie('refreshToken', refreshToken, {
+    return res.status(200).cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
         path: '/auth/refresh-token',
-    });
+    }).json({"accessToken": token});
 });
 authRouter.post('/logout', checkRefreshTokenMiddleware,  async (req: Request, res: Response) => {
     return res.sendStatus(204);
