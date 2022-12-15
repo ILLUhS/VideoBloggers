@@ -1,6 +1,6 @@
-import {UserCreateModel} from "../models/user-create-model";
+import {UserCreateModel} from "../types/models/user-create-model";
 import {usersCollection} from "./db";
-import {UserViewModel} from "../models/user-view-model";
+import {UserViewModel} from "../types/models/user-view-model";
 
 export const usersRepository = {
     async create(newUser: UserCreateModel) {

@@ -11,6 +11,7 @@ export const jwtService = {
             return result.userId;
         }
         catch (error) {
+            console.log(error);
             return null;
         }
     }

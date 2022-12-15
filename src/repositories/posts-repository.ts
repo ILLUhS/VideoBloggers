@@ -1,6 +1,6 @@
 import {postsCollection} from "./db";
-import {PostCreateModel} from "../models/post-create-model";
-import {PostUpdateModel} from "../models/post-update-model";
+import {PostCreateModel} from "../types/models/post-create-model";
+import {PostUpdateModel} from "../types/models/post-update-model";
 
 export const postsRepository = {       //объект с методами управления данными
     async deleteByTd(id: string): Promise<boolean> {

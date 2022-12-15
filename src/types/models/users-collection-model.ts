@@ -1,5 +1,5 @@
-import {AccountDataType} from "../types/account-data-type";
-import {EmailConfirmationType} from "../types/email-confirmation-type";
+import {AccountDataType} from "../account-data-type";
+import {EmailConfirmationType} from "../email-confirmation-type";
 
 export type UsersCollectionModel = {
     "id": string;

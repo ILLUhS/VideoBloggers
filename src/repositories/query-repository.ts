@@ -1,8 +1,8 @@
 import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "./db";
-import {BlogsViewModel} from "../models/blogs-view-model";
-import {UserViewModel} from "../models/user-view-model";
-import {CommentsViewModel} from "../models/comments-view-model";
-import {QueryParamsModel} from "../models/query-params-model";
+import {BlogsViewModel} from "../types/models/blogs-view-model";
+import {UserViewModel} from "../types/models/user-view-model";
+import {CommentsViewModel} from "../types/models/comments-view-model";
+import {QueryParamsModel} from "../types/models/query-params-model";
 import {FilterType} from "../types/filter-type";
 
 export const queryRepository = {

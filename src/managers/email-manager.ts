@@ -1,4 +1,4 @@
-import {UserCreateModel} from "../models/user-create-model";
+import {UserCreateModel} from "../types/models/user-create-model";
 import {emailAdapter} from "../adapters/email-adapter";
 import { Buffer } from 'buffer';
 

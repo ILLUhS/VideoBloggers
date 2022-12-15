@@ -1,6 +1,6 @@
-import {CommentCreateModel} from "../models/comment-create-model";
+import {CommentCreateModel} from "../types/models/comment-create-model";
 import {commentsCollection} from "./db";
-import {CommentUpdateModel} from "../models/comment-update-model";
+import {CommentUpdateModel} from "../types/models/comment-update-model";
 
 export const commentsRepository = {
     async create(newComment: CommentCreateModel) {

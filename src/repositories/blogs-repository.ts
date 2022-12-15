@@ -1,7 +1,7 @@
 import {blogsCollection} from "./db";
-import {BlogUpdateModel} from "../models/blog-update-model";
-import {BlogCreateModel} from "../models/blog-create-model";
-import {BlogsViewModel} from "../models/blogs-view-model";
+import {BlogUpdateModel} from "../types/models/blog-update-model";
+import {BlogCreateModel} from "../types/models/blog-create-model";
+import {BlogsViewModel} from "../types/models/blogs-view-model";
 
 export const blogsRepository = { //объект с методами управления данными
     async findById(id: string): Promise<BlogsViewModel | null> {

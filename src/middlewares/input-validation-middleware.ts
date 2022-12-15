@@ -3,7 +3,7 @@ import {body, validationResult, CustomValidator, oneOf} from 'express-validator'
 import {blogsService} from "../services/blogs-service";
 import {usersService} from "../services/users-service";
 import {postsService} from "../services/posts-service";
-import {QueryParamsModel} from "../models/query-params-model";
+import {QueryParamsModel} from "../types/models/query-params-model";
 import {ErrorsType} from "../types/errors-type";
 import {SortDirection} from "mongodb";
 import {authService} from "../services/auth-service";
