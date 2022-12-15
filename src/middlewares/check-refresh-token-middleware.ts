@@ -2,13 +2,13 @@ import {NextFunction, Request, Response} from "express";
 import {jwtService} from "../application/jwt-service";
 import {usersService} from "../services/users-service";
 
-export const authorizationBearerGuardMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    if(!req.headers.authorization)
+export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    if(!req.cookies.refreshToken)
         return res.sendStatus(401);
-    const token = req.headers.authorization.split(' ')[1];
-    const userId = await jwtService.getUserIdByToken(token);
+    const userId = await jwtService.getUserIdByRefreshToken(req.cookies.refreshToken);
     if (!userId)
         return res.sendStatus(401);
+    await jwtService.addRefreshTokenInBlackList(req.cookies.refreshToken);
     const user = await usersService.findUser('id', userId);
     if(user) {
         req.user = user;

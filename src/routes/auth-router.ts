@@ -10,6 +10,7 @@ import {usersService} from "../services/users-service";
 import {jwtService} from "../application/jwt-service";
 import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-bearer-guard-middleware";
 import {authService} from "../services/auth-service";
+import {checkRefreshTokenMiddleware} from "../middlewares/check-refresh-token-middleware";
 
 export const authRouter = Router({});
 
@@ -17,8 +18,13 @@ authRouter.post('/login', loginOrEmailValidation, errorsValidation,
     async (req: Request, res: Response) => {
     const checkingUserId = await usersService.cechCredentials(String(req.body.loginOrEmail), String(req.body.password));
     if(checkingUserId) {
-        const token = await jwtService.createJWT(checkingUserId);
-        return res.status(200).json({"accessToken": token});
+        const token = await jwtService.createAccessJWT(checkingUserId);
+        const refreshToken = await jwtService.createRefreshJWT(checkingUserId);
+        return res.status(200).json({"accessToken": token}).cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            path: '/auth/refresh-token',
+        });
     }
     else
         return res.sendStatus(401);
@@ -49,4 +55,13 @@ authRouter.post('/registration-confirmation', checkConfirmationCode, errorsValid
 authRouter.post('/registration-email-resending', checkEmailResending, errorsValidation,
     async (req: Request, res: Response) => {
         return res.sendStatus(204);
+});
+authRouter.post('/refresh-token', checkRefreshTokenMiddleware,  async (req: Request, res: Response) => {
+    const token = await jwtService.createAccessJWT(req.user!.id);
+    const refreshToken = await jwtService.createRefreshJWT(req.user!.id);
+    return res.status(200).json({"accessToken": token}).cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        path: '/auth/refresh-token',
+    });
 });

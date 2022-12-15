@@ -7,12 +7,13 @@ import {authRouter} from "../routes/auth-router";
 import {commentsRouter} from "../routes/comments-router";
 import {runDb} from "../repositories/db";
 import {settings} from "./settings";
-
+import cookieParser from "cookie-parser";
 export const app = express();
 
 const jsonBody = express.json();
 
 app.use(jsonBody);
+app.use(cookieParser());
 app.use('/testing/all-data', testingAllDataRouter)
 app.use('/blogs', blogsRouter);
 app.use('/posts', postsRouter);
