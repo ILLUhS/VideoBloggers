@@ -6,7 +6,6 @@ import {
     loginOrEmailValidation,
     loginValidation, passwordValidation
 } from "../middlewares/input-validation-middleware";
-import {usersService} from "../services/users-service";
 import {jwtService} from "../application/jwt-service";
 import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-bearer-guard-middleware";
 import {authService} from "../services/auth-service";
@@ -16,7 +15,7 @@ export const authRouter = Router({});
 
 authRouter.post('/login', loginOrEmailValidation, errorsValidation,
     async (req: Request, res: Response) => {
-    const checkingUserId = await usersService.cechCredentials(String(req.body.loginOrEmail), String(req.body.password));
+    const checkingUserId = await authService.cechCredentials(String(req.body.loginOrEmail), String(req.body.password));
     if(checkingUserId) {
         const token = await jwtService.createAccessJWT(checkingUserId);
         const refreshToken = await jwtService.createRefreshJWT(checkingUserId);
