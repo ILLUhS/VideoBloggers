@@ -12,6 +12,7 @@ export const app = express();
 
 const jsonBody = express.json();
 
+app.set('trust proxy', true)
 app.use(jsonBody);
 app.use(cookieParser());
 app.use('/testing/all-data', testingAllDataRouter)

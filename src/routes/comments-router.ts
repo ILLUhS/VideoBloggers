@@ -1,8 +1,8 @@
 import {Router, Request, Response} from "express";
 import {queryRepository} from "../repositories/query-repository";
 import {commentsService} from "../services/comments-service";
-import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-bearer-guard-middleware";
-import {contentCommentValidation, errorsValidation} from "../middlewares/input-validation-middleware";
+import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
+import {contentCommentValidation, errorsValidation} from "../middlewares/input-validation";
 
 export const commentsRouter = Router({})
 
@@ -13,7 +13,7 @@ commentsRouter.get('/:id', async (req: Request, res: Response) => {
     else
         return res.sendStatus(404);
 });
-commentsRouter.delete('/:id', authorizationBearerGuardMiddleware, async (req: Request, res: Response) => {
+commentsRouter.delete('/:id', authorizationBearerGuard, async (req: Request, res: Response) => {
     const foundComment = await queryRepository.findCommentById(String(req.params.id));
     if(!foundComment)
         return res.sendStatus(404);
@@ -24,7 +24,7 @@ commentsRouter.delete('/:id', authorizationBearerGuardMiddleware, async (req: Re
     else
         return res.sendStatus(403);
 });
-commentsRouter.put('/:id', authorizationBearerGuardMiddleware, contentCommentValidation,
+commentsRouter.put('/:id', authorizationBearerGuard, contentCommentValidation,
     errorsValidation, async (req: Request, res: Response) => {
     const foundComment = await queryRepository.findCommentById(String(req.params.id));
     if(!foundComment)

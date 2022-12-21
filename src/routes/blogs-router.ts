@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {authorizationBasicGuardMiddleware} from "../middlewares/authorization-basic-guard-middleware";
+import {authorizationBasicGuard} from "../middlewares/authorization-basic-guard";
 import {
     blogIdIsExist,
     contentPostValidation,
@@ -9,7 +9,7 @@ import {
     shortDescriptionPostValidation,
     titlePostValidation,
     websiteUrlBlogValidation
-} from "../middlewares/input-validation-middleware";
+} from "../middlewares/input-validation";
 import {queryRepository} from "../repositories/query-repository";
 import {blogsService} from "../services/blogs-service";
 export const blogsRouter = Router({});
@@ -29,14 +29,14 @@ blogsRouter.get('/:id/posts', blogIdIsExist, queryParamsValidation, async (req: 
             req.searchParams!, {blogId: String(req.params.id)});
         return res.status(200).json(foundPosts);
 });
-blogsRouter.delete('/:id', authorizationBasicGuardMiddleware, async (req, res) => {
+blogsRouter.delete('/:id', authorizationBasicGuard, async (req, res) => {
         const deletedBlog = await blogsService.deleteBlogByTd(String(req.params.id));
         if(deletedBlog)
             return res.sendStatus(204);
         else
             return res.sendStatus(404);
 });
-blogsRouter.post('/', authorizationBasicGuardMiddleware, nameBlogValidation,
+blogsRouter.post('/', authorizationBasicGuard, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
     async (req: Request, res: Response) => {
         const createdBlogId = await blogsService.createBlog(String(req.body.name),
@@ -46,7 +46,7 @@ blogsRouter.post('/', authorizationBasicGuardMiddleware, nameBlogValidation,
         else
             return res.status(409).send('Database write error');
 });
-blogsRouter.post('/:id/posts', authorizationBasicGuardMiddleware, blogIdIsExist,
+blogsRouter.post('/:id/posts', authorizationBasicGuard, blogIdIsExist,
     titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, errorsValidation,
     async (req: Request, res: Response) => {
@@ -61,7 +61,7 @@ blogsRouter.post('/:id/posts', authorizationBasicGuardMiddleware, blogIdIsExist,
         else
             return res.status(409).send('Database write error');
 });
-blogsRouter.put('/:id', authorizationBasicGuardMiddleware, nameBlogValidation,
+blogsRouter.put('/:id', authorizationBasicGuard, nameBlogValidation,
     descriptionBlogValidation, websiteUrlBlogValidation, errorsValidation,
     async (req: Request, res: Response) => {
         const updatedBlog = await blogsService.updateBlog(String(req.params.id), String(req.body.name),

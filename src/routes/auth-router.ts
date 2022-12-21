@@ -5,11 +5,11 @@ import {
     errorsValidation,
     loginOrEmailValidation,
     loginValidation, passwordValidation
-} from "../middlewares/input-validation-middleware";
+} from "../middlewares/input-validation";
 import {jwtService} from "../application/jwt-service";
-import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-bearer-guard-middleware";
+import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {authService} from "../services/auth-service";
-import {checkRefreshTokenMiddleware} from "../middlewares/check-refresh-token-middleware";
+import {checkRefreshToken} from "../middlewares/check-refresh-token";
 
 export const authRouter = Router({});
 
@@ -28,7 +28,7 @@ authRouter.post('/login', loginOrEmailValidation, errorsValidation,
     else
         return res.sendStatus(401);
 });
-authRouter.get('/me', authorizationBearerGuardMiddleware, async (req: Request, res: Response) => {
+authRouter.get('/me', authorizationBearerGuard, async (req: Request, res: Response) => {
     return res.status(200).json({
         email: req.user!.email,
         login: req.user!.login,
@@ -55,7 +55,7 @@ authRouter.post('/registration-email-resending', checkEmailResending, errorsVali
     async (req: Request, res: Response) => {
         return res.sendStatus(204);
 });
-authRouter.post('/refresh-token', checkRefreshTokenMiddleware,  async (req: Request, res: Response) => {
+authRouter.post('/refresh-token', checkRefreshToken,  async (req: Request, res: Response) => {
     const token = await jwtService.createAccessJWT(req.user!.id);
     const refreshToken = await jwtService.createRefreshJWT(req.user!.id);
     return res.status(200).cookie('refreshToken', refreshToken, {
@@ -64,6 +64,6 @@ authRouter.post('/refresh-token', checkRefreshTokenMiddleware,  async (req: Requ
         path: '/auth/refresh-token',
     }).json({"accessToken": token});
 });
-authRouter.post('/logout', checkRefreshTokenMiddleware,  async (req: Request, res: Response) => {
+authRouter.post('/logout', checkRefreshToken,  async (req: Request, res: Response) => {
     return res.sendStatus(204);
 });

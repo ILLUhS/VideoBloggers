@@ -1,13 +1,13 @@
 import {Request, Response, Router} from "express";
-import {authorizationBasicGuardMiddleware} from "../middlewares/authorization-basic-guard-middleware";
+import {authorizationBasicGuard} from "../middlewares/authorization-basic-guard";
 import {
     blogIdPostValidation, contentCommentValidation,
     contentPostValidation, errorsValidation, postIdIsExist, queryParamsValidation,
     shortDescriptionPostValidation, titlePostValidation
-} from "../middlewares/input-validation-middleware";
+} from "../middlewares/input-validation";
 import {queryRepository} from "../repositories/query-repository";
 import {postsService} from "../services/posts-service";
-import {authorizationBearerGuardMiddleware} from "../middlewares/authorization-bearer-guard-middleware";
+import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 
 export const postsRouter = Router({});
 
@@ -21,14 +21,14 @@ postsRouter.get('/:id', async (req, res) => {
     else
         return res.sendStatus(404);
 });
-postsRouter.delete('/:id', authorizationBasicGuardMiddleware, async (req, res) => {
+postsRouter.delete('/:id', authorizationBasicGuard, async (req, res) => {
     const deletedPost = await postsService.deletePostByTd(String(req.params.id));
     if(deletedPost)
         return res.sendStatus(204);
     else
         return res.sendStatus(404);
 });
-postsRouter.post('/', authorizationBasicGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
+postsRouter.post('/', authorizationBasicGuard, titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, blogIdPostValidation, errorsValidation,
     async (req: Request, res: Response) => {
         const createdPostId = await postsService.createPost(String(req.body.title), String(req.body.shortDescription),
@@ -38,7 +38,7 @@ postsRouter.post('/', authorizationBasicGuardMiddleware, titlePostValidation, sh
         else
             return res.status(409).send('Database write error');
 });
-postsRouter.put('/:id', authorizationBasicGuardMiddleware, titlePostValidation, shortDescriptionPostValidation,
+postsRouter.put('/:id', authorizationBasicGuard, titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, blogIdPostValidation, errorsValidation,
     async (req: Request, res: Response) => {
         const updatedPost = await postsService.updatePost(String(req.params.id), String(req.body.title),
@@ -48,7 +48,7 @@ postsRouter.put('/:id', authorizationBasicGuardMiddleware, titlePostValidation, 
         else
             return res.sendStatus(404);
 });
-postsRouter.post('/:id/comments', authorizationBearerGuardMiddleware, postIdIsExist,
+postsRouter.post('/:id/comments', authorizationBearerGuard, postIdIsExist,
     contentCommentValidation, errorsValidation, async (req: Request, res: Response) => {
         const createdCommentId = await postsService.createCommentByPostId(String(req.body.content),
             req.user!.id, req.user!.login, req.params.id);
