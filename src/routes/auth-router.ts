@@ -10,10 +10,11 @@ import {jwtService} from "../application/jwt-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {authService} from "../services/auth-service";
 import {checkRefreshToken} from "../middlewares/check-refresh-token";
+import {requestLimit} from "../middlewares/request-limit";
 
 export const authRouter = Router({});
 
-authRouter.post('/login', loginOrEmailValidation, errorsValidation,
+authRouter.post('/login', requestLimit, loginOrEmailValidation, errorsValidation,
     async (req: Request, res: Response) => {
     const checkingUserId = await authService.cechCredentials(String(req.body.loginOrEmail), String(req.body.password));
     if(checkingUserId) {
@@ -35,7 +36,7 @@ authRouter.get('/me', authorizationBearerGuard, async (req: Request, res: Respon
         userId: req.user!.id
     });
 });
-authRouter.post('/registration', loginValidation, passwordValidation, emailValidation, errorsValidation,
+authRouter.post('/registration', requestLimit, loginValidation, passwordValidation, emailValidation, errorsValidation,
     async (req: Request, res: Response) => {
         const userIsCreated = await authService.createUser(
             String(req.body.login),
@@ -47,11 +48,11 @@ authRouter.post('/registration', loginValidation, passwordValidation, emailValid
         else
             return res.status(409).send('Database write error');
 });
-authRouter.post('/registration-confirmation', checkConfirmationCode, errorsValidation,
+authRouter.post('/registration-confirmation', requestLimit, checkConfirmationCode, errorsValidation,
     async (req: Request, res: Response) => {
         return res.sendStatus(204);
 });
-authRouter.post('/registration-email-resending', checkEmailResending, errorsValidation,
+authRouter.post('/registration-email-resending', requestLimit, checkEmailResending, errorsValidation,
     async (req: Request, res: Response) => {
         return res.sendStatus(204);
 });
