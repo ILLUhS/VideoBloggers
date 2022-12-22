@@ -31,6 +31,12 @@ export const refreshTokensMetaRepository = {
                     }
             })).matchedCount === 1;
     },
+    async deleteByUserAndDeviceId(userId: string, deviceId: string): Promise<boolean> {
+        return (await refreshTokensMetaCollection.deleteOne({
+            userId: userId,
+            deviceId: deviceId
+        })).deletedCount === 1;
+    },
     async deleteById(userId: string): Promise<boolean> {
         return (await refreshTokensMetaCollection.deleteMany({userId: userId})).acknowledged;
     },
