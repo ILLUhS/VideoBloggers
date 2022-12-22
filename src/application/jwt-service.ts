@@ -47,7 +47,7 @@ export const jwtService = {
         await refreshTokensMetaRepository.update(payload.iat, payload.exp, deviceId, deviceIp, payload.userId);
         return token;
     },
-    async clearRefreshTokenBlackList() {
+    async deleteAllTokensMeta() {
         return refreshTokensMetaRepository.deleteAll();
     }
 }

@@ -12,8 +12,8 @@ testingAllDataRouter.delete('/', async (req, res) => {
     const postsIsDeleted = await postsService.deleteAllPosts();
     const usersIsDeleted = await usersService.deleteAllUsers();
     const commentsIsDeleted = await commentsService.deleteAllComments();
-    const refreshTokensIsDeleted = await jwtService.clearRefreshTokenBlackList();
-    if(blogsIsDeleted && postsIsDeleted && usersIsDeleted && commentsIsDeleted && refreshTokensIsDeleted)
+    const refreshTokensMetaIsDeleted = await jwtService.deleteAllTokensMeta();
+    if(blogsIsDeleted && postsIsDeleted && usersIsDeleted && commentsIsDeleted && refreshTokensMetaIsDeleted)
         return res.sendStatus(204);
     else
         return res.status(409).send('Database error');

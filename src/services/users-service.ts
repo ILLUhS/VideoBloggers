@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import {v4 as uuidv4} from "uuid";
 import {usersRepository} from "../repositories/users-repository";
 import add from "date-fns/add";
+import {refreshTokensMetaRepository} from "../repositories/refresh-tokens-meta-repository";
 export const usersService = {
     async createUser(login: string, password: string, email: string) {
         const passwordSalt = await bcrypt.genSalt();
@@ -27,9 +28,11 @@ export const usersService = {
         return await usersRepository.findByField(field, value);
     },
     async deleteUserById(id: string) {
+        await refreshTokensMetaRepository.deleteById(id);
         return await usersRepository.deleteById(id);
     },
     async deleteAllUsers() {
+        await refreshTokensMetaRepository.deleteAll();
         return await usersRepository.deleteAll();
     },
     async _generateHash(password: string, salt: string) {
