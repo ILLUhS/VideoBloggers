@@ -57,8 +57,8 @@ authRouter.post('/registration-email-resending', requestLimit, checkEmailResendi
         return res.sendStatus(204);
 });
 authRouter.post('/refresh-token', checkRefreshToken,  async (req: Request, res: Response) => {
-    const token = await jwtService.createAccessJWT(req.user!.id);
-    const refreshToken = ''//await jwtService.reCreateRefreshJWT();
+    const token = await jwtService.createAccessJWT(req.payload!.userId);
+    const refreshToken = ''//await jwtService.reCreateRefreshJWT(req.payload!.userId, req.payload!.deviceId);
     return res.status(200).cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
