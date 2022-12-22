@@ -1,5 +1,5 @@
 export type RefreshTokensMetaModel = {
-    issueAt: number;
+    issuedAt: number;
     expirationAt: number;
     deviceId: string;
     deviceIp: string;
