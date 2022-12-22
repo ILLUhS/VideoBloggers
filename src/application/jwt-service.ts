@@ -41,12 +41,11 @@ export const jwtService = {
         await refreshTokensMetaRepository.create(payload.iat, payload.exp, deviceId, deviceIp, deviceName, userId);
         return token;
     },
-    async reCreateRefreshJWT(userId: string, deviceId: string) {
-        /*
+    async reCreateRefreshJWT(userId: string, deviceId: string, deviceIp: string) {
         const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20s'});
         const payload = JSON.parse(token.split('.')[1]);
-        await refreshTokensMetaRepository.create(payload.iat, payload.exp, deviceId, deviceIp, deviceName, userId);
-        return token;*/
+        await refreshTokensMetaRepository.update(payload.iat, payload.exp, deviceId, deviceIp, payload.userId);
+        return token;
     },
     async clearRefreshTokenBlackList() {
         return refreshTokensMetaRepository.deleteAll();

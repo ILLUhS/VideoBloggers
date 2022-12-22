@@ -20,6 +20,16 @@ export const refreshTokensMetaRepository = {
             userId: userId
         })).acknowledged;
     },
+    async update(issuedAt: number, expirationAt: number, deviceId: string, deviceIp: string, userId: string) {
+        return (await refreshTokensMetaCollection.updateOne({deviceId: deviceId, userId: userId},
+            { $set:
+                    {
+                        issuedAt: issuedAt,
+                        expirationAt: expirationAt,
+                        deviceIp: deviceIp
+                    }
+            })).matchedCount === 1;
+    },
     async deleteAll(): Promise<boolean> {
         return (await refreshTokensMetaCollection.deleteMany({})).acknowledged;
     }
