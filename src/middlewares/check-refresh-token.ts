@@ -5,11 +5,10 @@ import {usersService} from "../services/users-service";
 export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     if(!req.cookies.refreshToken)
         return res.sendStatus(401);
-    const userId = await jwtService.getUserIdByRefreshToken(req.cookies.refreshToken);
-    if (!userId)
+    const payload = await jwtService.getPayloadByRefreshToken(req.cookies.refreshToken);
+    if (!payload)
         return res.sendStatus(401);
-    await jwtService.addRefreshTokenInBlackList(req.cookies.refreshToken);
-    const user = await usersService.findUser('id', userId);
+    const user = await usersService.findUser('id', payload.userId);
     if(user) {
         req.user = user;
         return next();

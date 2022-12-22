@@ -1,6 +1,6 @@
 import {blogsRepository} from "../repositories/blogs-repository";
 import {postsService} from "./posts-service";
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 export const blogsService = {       //объект с методами управления данными
     async findBlogById(id: string) {
         return await blogsRepository.findById(id);
