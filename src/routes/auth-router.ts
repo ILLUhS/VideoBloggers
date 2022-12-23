@@ -66,6 +66,9 @@ authRouter.post('/refresh-token', checkRefreshToken,  async (req: Request, res: 
     }).json({"accessToken": token});
 });
 authRouter.post('/logout', checkRefreshToken,  async (req: Request, res: Response) => {
-    await jwtService.deleteOneTokensMeta(req.payload!.userId, req.payload!.deviceId);
-    return res.sendStatus(204);
+    const metaIsDeleted = await jwtService.deleteOneTokensMeta(req.payload!.userId, req.payload!.deviceId);
+    if(metaIsDeleted)
+        return res.sendStatus(204);
+    else
+        return res.status(409).send('Database write error');
 });

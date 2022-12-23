@@ -8,6 +8,7 @@ import {commentsRouter} from "../routes/comments-router";
 import {runDb} from "../repositories/db";
 import {settings} from "./settings";
 import cookieParser from "cookie-parser";
+import {securityDevicesRouter} from "../routes/security-devices-router";
 export const app = express();
 
 const jsonBody = express.json();
@@ -21,6 +22,7 @@ app.use('/posts', postsRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/comments', commentsRouter);
+app.use('/security/devices', securityDevicesRouter);
 
 const port = settings.PORT;
 

@@ -31,7 +31,7 @@ export const refreshTokensMetaRepository = {
                     }
             })).matchedCount === 1;
     },
-    async deleteByUserAndDeviceId(userId: string, deviceId: string): Promise<boolean> {
+    async deleteByUserIdAndDeviceId(userId: string, deviceId: string): Promise<boolean> {
         return (await refreshTokensMetaCollection.deleteOne({
             userId: userId,
             deviceId: deviceId
@@ -42,5 +42,16 @@ export const refreshTokensMetaRepository = {
     },
     async deleteAll(): Promise<boolean> {
         return (await refreshTokensMetaCollection.deleteMany({})).acknowledged;
+    },
+    async findByUserId(userId: string) {
+        return await refreshTokensMetaCollection.find({userId: userId},
+            {projection: {_id: 0}}).toArray();
+    },
+    async deleteAllExceptCurrent(userId: string, deviceId: string): Promise<boolean> {
+        return (await refreshTokensMetaCollection.deleteMany({userId: userId,
+            deviceId: { $ne: deviceId}})).acknowledged;
+    },
+    async deleteByDeviceId(deviceId: string): Promise<boolean> {
+        return (await refreshTokensMetaCollection.deleteOne({deviceId: deviceId})).deletedCount === 1;
     }
 }
