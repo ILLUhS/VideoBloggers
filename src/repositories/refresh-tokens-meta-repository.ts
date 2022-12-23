@@ -47,6 +47,10 @@ export const refreshTokensMetaRepository = {
         return await refreshTokensMetaCollection.find({userId: userId},
             {projection: {_id: 0}}).toArray();
     },
+    async findByDeviceId(deviceId: string) {
+        return await refreshTokensMetaCollection.findOne({deviceId: deviceId},
+            {projection: {_id: 0}});
+    },
     async deleteAllExceptCurrent(userId: string, deviceId: string): Promise<boolean> {
         return (await refreshTokensMetaCollection.deleteMany({userId: userId,
             deviceId: { $ne: deviceId}})).acknowledged;

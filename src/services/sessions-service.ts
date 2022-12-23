@@ -10,6 +10,9 @@ export const sessionsService = {
             deviceId: s.deviceId
         }));
     },
+    async getByDeviceId(deviceId: string) {
+        return await refreshTokensMetaRepository.findByDeviceId(deviceId);
+    },
     async deleteAllExceptCurrent(userId: string, deviceId: string) {
         return await refreshTokensMetaRepository.deleteAllExceptCurrent(userId, deviceId);
     },
