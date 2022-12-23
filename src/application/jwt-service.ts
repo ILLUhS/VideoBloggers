@@ -43,7 +43,7 @@ export const jwtService = {
     },
     async reCreateRefreshJWT(userId: string, deviceId: string, deviceIp: string) {
         const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20s'});
-        const payload = JSON.parse(token.split('.')[1]);
+        const payload = JSON.parse(Buffer.from(token.split('.')[1], "base64").toString("ascii"));
         await refreshTokensMetaRepository.update(payload.iat, payload.exp, deviceId, deviceIp, payload.userId);
         return token;
     },
