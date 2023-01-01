@@ -5,6 +5,7 @@ import {UsersCollectionModel} from "../types/models/users-collection-model";
 import {settings} from "../config/settings";
 import {CommentsCollectionModel} from "../types/models/comments-collection-model";
 import {RefreshTokensMetaModel} from "../types/models/refresh-tokens-meta-model";
+import mongoose from "mongoose";
 const mongoURI = settings.MONGO_URL
 if(!mongoURI) {
     throw Error('Bad URL')
@@ -18,10 +19,31 @@ export const postsCollection = db.collection<PostsCollectionModel>("posts");
 export const usersCollection = db.collection<UsersCollectionModel>("users");
 export const commentsCollection = db.collection<CommentsCollectionModel>("comments");
 export const refreshTokensMetaCollection = db.collection<RefreshTokensMetaModel>("refreshTokensMeta");
+
+const userSchema = new mongoose.Schema<UsersCollectionModel>({
+    id: String,
+    accountData: {
+        login: String,
+        passwordHash: String,
+        email: String,
+        createdAt: String
+    },
+    emailConfirmation: {
+        confirmationCode: String,
+        expirationTime: Date,
+        isConfirmed: String
+    }
+});
+
+export const UserModel = mongoose.model('users', userSchema);
+
 export async function runDb() {
     try {
         await client.connect();
     } catch {
         await client.close();
     }
+}
+export async function stopDb() {
+    await client.close();
 }
