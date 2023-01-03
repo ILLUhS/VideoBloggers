@@ -78,7 +78,8 @@ authRouter.post('/password-recovery', requestLimit, checkEmailForPass, errorsVal
 });
 authRouter.post('/new-password', requestLimit, newPassValidation, recoveryCodeValidation, errorsValidation,
     async (req: Request, res: Response) => {
-        const user = await usersService.findUser('passwordRecovery.recoveryCode', req.body.recoveryCode)
+        const recoveryCode = Buffer.from(req.body.recoveryCode, "base64").toString("ascii");
+        const user = await usersService.findUser('passwordRecovery.recoveryCode', recoveryCode)
         await authService.setNewPassword(user!.id, req.body.newPassword);
         return res.sendStatus(204);
 });
