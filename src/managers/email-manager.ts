@@ -20,7 +20,7 @@ export const emailManager = {
         const link = `https://video-bloggers.vercel.app/password-recovery?recoveryCode=${code}`;
         const message = `<h1>You have chosen password recovery</h1>
         <p>To finish recovery please follow the link below:
-            <a href=${link}>complete registration</a>
+            <a href=${link}>recovery password</a>
         </p>`
         await emailAdapter.sendEmail(email, subject, message);
     }
