@@ -77,7 +77,7 @@ authRouter.post('/password-recovery', requestLimit, checkEmailForPass, errorsVal
         await authService.passRecovery(req.body.email);
         return res.sendStatus(204);
 });
-authRouter.post('/new-password', requestLimit, newPassValidation, checkRecoveryCode, errorsValidation,
+authRouter.post('/new-password', requestLimit, newPassValidation, errorsValidation, checkRecoveryCode,
     async (req: Request, res: Response) => {
         await authService.setNewPassword(req.user!.id, req.body.newPassword);
         return res.sendStatus(204);
