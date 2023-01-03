@@ -1,6 +1,6 @@
 import {UserCreateModel} from "../types/models/user-create-model";
 import {emailAdapter} from "../adapters/email-adapter";
-import { Buffer } from 'buffer';
+import {Buffer} from 'buffer';
 
 export const emailManager = {
     async sendEmailConfirmationMessage(user: UserCreateModel) {
@@ -12,6 +12,16 @@ export const emailManager = {
         <p>To finish registration please follow the link below:
             <a href=${link}>complete registration</a>
         </p>`
-        await emailAdapter.sendEmail(email,subject, message);
+        await emailAdapter.sendEmail(email, subject, message);
+    },
+    async sendPassRecoveryMessage(email: string, recoveryCode: string) {
+        const subject = 'Confirm your registration';
+        const code = Buffer.from(recoveryCode).toString('base64');
+        const link = `https://video-bloggers.vercel.app/password-recovery?recoveryCode=${code}`;
+        const message = `<h1>Thank for your registration</h1>
+        <p>To finish registration please follow the link below:
+            <a href=${link}>complete registration</a>
+        </p>`
+        await emailAdapter.sendEmail(email, subject, message);
     }
 }

@@ -7,13 +7,15 @@ export const usersRepository = {
         return (await usersCollection.insertOne({...newUser})).acknowledged;
     },
     async findByField(field: string, value: string): Promise<UserViewModel | null> {
-        const user =  await usersCollection.findOne({[field]: value}, {projection: {
+        const user = await usersCollection.findOne({[field]: value}, {
+            projection: {
                 _id: 0,
                 id: 1,
                 'accountData.login': 1,
                 'accountData.email': 1,
                 'accountData.createdAt': 1
-            }});
+            }
+        });
         return user ? {
             id: user.id,
             login: user.accountData.login,
@@ -32,14 +34,32 @@ export const usersRepository = {
     },
     async updateConfirmation(id: string): Promise<boolean> {
         return (await usersCollection.updateOne({id: id},
-            { $set: { 'emailConfirmation.isConfirmed': true }})).matchedCount === 1
+            {$set: {'emailConfirmation.isConfirmed': true}})).matchedCount === 1;
     },
     async updateExpirationTime(id: string, expirationTime: Date): Promise<boolean> {
         return (await usersCollection.updateOne({id: id},
-            { $set: { 'emailConfirmation.expirationTime': expirationTime }})).matchedCount === 1
+            {$set: {'emailConfirmation.expirationTime': expirationTime}})).matchedCount === 1;
     },
     async updateConfirmationCode(id: string, code: string): Promise<boolean> {
         return (await usersCollection.updateOne({id: id},
-            { $set: { 'emailConfirmation.confirmationCode': code }})).matchedCount === 1
+            {$set: {'emailConfirmation.confirmationCode': code}})).matchedCount === 1;
+    },
+    async updatePassRecovery(id: string, code: string, expiration: Date, isConfirmed: boolean) {
+        return (await usersCollection.updateOne({id: id},
+            {
+                $set: {
+                    'passwordRecovery.recoveryCode': code,
+                    'passwordRecovery.expirationTime': expiration,
+                    'passwordRecovery.isUsed': isConfirmed
+                }
+            })).matchedCount === 1;
+    },
+    async updatePassRecoveryStatus(id: string): Promise<boolean> {
+        return (await usersCollection.updateOne({id: id},
+            {$set: {'passwordRecovery.isUsed': true}})).matchedCount === 1;
+    },
+    async updatePassword(id: string, newPasswordHash: string): Promise<boolean> {
+        return (await usersCollection.updateOne({id: id},
+            {$set: {'accountData.passwordHash': newPasswordHash}})).matchedCount === 1;
     }
 }

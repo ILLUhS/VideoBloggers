@@ -1,10 +1,10 @@
 import {Request, Response, Router} from "express";
 import {
-    checkConfirmationCode, checkEmailResending,
+    checkConfirmationCode, checkEmailForPass, checkEmailResending, checkRecoveryCode,
     emailValidation,
     errorsValidation,
     loginOrEmailValidation,
-    loginValidation, passwordValidation
+    loginValidation, newPassValidation, passwordValidation
 } from "../middlewares/input-validation";
 import {jwtService} from "../application/jwt-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
@@ -72,3 +72,13 @@ authRouter.post('/logout', checkRefreshToken,  async (req: Request, res: Respons
     else
         return res.status(409).send('Database write error');
 });
+authRouter.post('/password-recovery', requestLimit, checkEmailForPass, errorsValidation,
+    async (req: Request, res: Response) => {
+        await authService.passRecovery(req.body.email);
+        return res.sendStatus(204);
+});
+authRouter.post('/new-password', requestLimit, newPassValidation, checkRecoveryCode, errorsValidation,
+    async (req: Request, res: Response) => {
+        await authService.setNewPassword(req.user!.id, req.body.newPassword);
+        return res.sendStatus(204);
+    });

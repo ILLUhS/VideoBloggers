@@ -3,6 +3,7 @@ import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
 import {usersRepository} from "../repositories/users-repository";
 import {emailManager} from "../managers/email-manager";
+import {UserViewModel} from "../types/models/user-view-model";
 
 export const authService = {
     async createUser(login: string, password: string, email: string) {
@@ -80,5 +81,46 @@ export const authService = {
             console.log(e);
             return false;
         }
+    },
+    async passRecovery(email: string) {
+        const user = await usersRepository.findByFieldWithHash('accountData.email', email);
+        if(!user)
+            return false;
+        const recoveryCode  = uuidv4();
+        const expirationTime = add(new Date(), {hours: 24});
+        const isUsed = false;
+        try {
+            await usersRepository.updatePassRecovery(user.id, recoveryCode, expirationTime, isUsed);
+            await emailManager.sendPassRecoveryMessage(email, recoveryCode);
+            return true;
+        }
+        catch (e) {
+            console.log(e);
+            return false;
+        }
+    },
+    async confirmPassRecoveryCode(code: string): Promise<UserViewModel | false> {
+        code = Buffer.from(code, "base64").toString("ascii");
+        const user = await usersRepository.findByFieldWithHash('passwordRecovery.recoveryCode', code);
+        if(!user)
+            return false;
+        if(!user.passwordRecovery)
+            return false;
+        if(user.passwordRecovery.expirationTime <= new Date())
+            return false;
+        if(user.passwordRecovery.isUsed)
+            return false;
+        await usersRepository.updatePassRecoveryStatus(user.id);
+        return {
+            id: user.id,
+            login: user.accountData.login,
+            email: user.accountData.email,
+            createdAt: user.accountData.createdAt
+        }
+    },
+    async setNewPassword(id: string, newPassword: string) {
+        const passwordSalt = await bcrypt.genSalt();
+        const newPasswordHash = await this._generateHash(newPassword, passwordSalt);
+        return await usersRepository.updatePassword(id, newPasswordHash);
     }
 }
