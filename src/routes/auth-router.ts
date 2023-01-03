@@ -1,16 +1,15 @@
 import {Request, Response, Router} from "express";
 import {
-    checkConfirmationCode, checkEmailForPass, checkEmailResending, checkRecoveryCode,
-    emailValidation,
-    errorsValidation,
-    loginOrEmailValidation,
-    loginValidation, newPassValidation, passwordValidation
+    checkConfirmationCode, checkEmailForPass, checkEmailResending,
+    emailValidation, errorsValidation, loginOrEmailValidation,
+    loginValidation, newPassValidation, passwordValidation, recoveryCodeValidation
 } from "../middlewares/input-validation";
 import {jwtService} from "../application/jwt-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {authService} from "../services/auth-service";
 import {checkRefreshToken} from "../middlewares/check-refresh-token";
 import {requestLimit} from "../middlewares/request-limit";
+import {usersService} from "../services/users-service";
 
 export const authRouter = Router({});
 
@@ -77,8 +76,9 @@ authRouter.post('/password-recovery', requestLimit, checkEmailForPass, errorsVal
         await authService.passRecovery(req.body.email);
         return res.sendStatus(204);
 });
-authRouter.post('/new-password', requestLimit, newPassValidation, errorsValidation, checkRecoveryCode,
+authRouter.post('/new-password', requestLimit, newPassValidation, recoveryCodeValidation, errorsValidation,
     async (req: Request, res: Response) => {
-        await authService.setNewPassword(req.user!.id, req.body.newPassword);
+        const user = await usersService.findUser('passwordRecovery.recoveryCode', req.body.recoveryCode)
+        await authService.setNewPassword(user!.id, req.body.newPassword);
         return res.sendStatus(204);
-    });
+});

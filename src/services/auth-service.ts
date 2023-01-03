@@ -3,7 +3,6 @@ import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
 import {usersRepository} from "../repositories/users-repository";
 import {emailManager} from "../managers/email-manager";
-import {UserViewModel} from "../types/models/user-view-model";
 
 export const authService = {
     async createUser(login: string, password: string, email: string) {
@@ -99,7 +98,7 @@ export const authService = {
             return false;
         }
     },
-    async confirmPassRecoveryCode(code: string): Promise<UserViewModel | false> {
+    async confirmPassRecoveryCode(code: string): Promise<boolean> {
         code = Buffer.from(code, "base64").toString("ascii");
         const user = await usersRepository.findByFieldWithHash('passwordRecovery.recoveryCode', code);
         if(!user)
@@ -110,15 +109,10 @@ export const authService = {
             return false;
         if(user.passwordRecovery.isUsed)
             return false;
-        await usersRepository.updatePassRecoveryStatus(user.id);
-        return {
-            id: user.id,
-            login: user.accountData.login,
-            email: user.accountData.email,
-            createdAt: user.accountData.createdAt
-        }
+        return true;
     },
     async setNewPassword(id: string, newPassword: string) {
+        await usersRepository.updatePassRecoveryStatus(id);
         const passwordSalt = await bcrypt.genSalt();
         const newPasswordHash = await this._generateHash(newPassword, passwordSalt);
         return await usersRepository.updatePassword(id, newPasswordHash);

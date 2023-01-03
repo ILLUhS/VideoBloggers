@@ -69,14 +69,13 @@ const checkEmail: CustomValidator = async email => {
     else
         throw new Error('Email is already confirmed or incorrect');
 };
-export const checkRecoveryCode = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await authService.confirmPassRecoveryCode(req.body.recoveryCode);
+const checkRecoveryCode: CustomValidator = async recoveryCode => {
+    const result = await authService.confirmPassRecoveryCode(recoveryCode);
     if(result) {
-        req.user = result;
-        return next();
+        return true;
     }
     else
-        return res.sendStatus(400);
+        throw new Error('Confirmation code is incorrect');
 };
 const loginIsFree: CustomValidator = async login => {
     const checkLogin = await usersService.findUser('accountData.login', login);
@@ -115,7 +114,7 @@ export const checkEmailResending = body('email')
 export const checkEmailForPass = body('email')
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
 export const newPassValidation = body('newPassword').isLength({min: 6, max: 20});
-
+export const recoveryCodeValidation = body('recoveryCode').custom(checkRecoveryCode);
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
     const errors: ErrorsType = {errorsMessages: []};
     for(let i = 0; i < validationResult(req).array({onlyFirstError: true}).length; i++) {
