@@ -115,11 +115,12 @@ export const queryRepository = {
             }});
     },
     async getUsersWithQueryParam(searchParams: QueryParamsModel) {
-        const users = await usersCollection.find({$or:
-                [
-                    {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
-                    {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
-                ]
+        const users = await usersCollection.find({
+                $or:
+                    [
+                        {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+                        {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
+                    ]
             },
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -131,8 +132,9 @@ export const queryRepository = {
             'accountData.login': 1,
             'accountData.email': 1,
             'accountData.createdAt': 1
-            }).toArray();
-        const usersCount = await usersCollection.countDocuments({$or:
+        }).toArray();
+        const usersCount = await usersCollection.countDocuments({
+            $or:
                 [
                     {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
                     {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
@@ -149,7 +151,7 @@ export const queryRepository = {
                 email: user.accountData.email,
                 createdAt: user.accountData.createdAt
             }))
-        }
+        };
     },
     async findUserById(id: string): Promise<UserViewModel | null> {
         const user = await usersCollection.findOne({id: id}, {projection: {

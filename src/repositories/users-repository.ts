@@ -1,13 +1,30 @@
 import {UserCreateModel} from "../types/models/user-create-model";
-import {usersCollection} from "./db";
+import {UserModel, usersCollection} from "./db";
 import {UserViewModel} from "../types/models/user-view-model";
 
 export const usersRepository = {
     async create(newUser: UserCreateModel) {
-        return (await usersCollection.insertOne({...newUser})).acknowledged;
+        await UserModel.create(newUser);
+        return true;
+
+
+        //return (await usersCollection.insertOne({...newUser})).acknowledged;
     },
     async findByField(field: string, value: string): Promise<UserViewModel | null> {
-        const user = await usersCollection.findOne({[field]: value}, {
+        const user = await UserModel.findOne({[field]: value}).select({
+            _id: 0,
+            id: 1,
+            'accountData.login': 1,
+            'accountData.email': 1,
+            'accountData.createdAt': 1
+        }).exec();
+        return user ? {
+            id: user.id,
+            login: user.accountData.login,
+            email: user.accountData.email,
+            createdAt: user.accountData.createdAt
+        } : null;
+        /*const user = await usersCollection.findOne({[field]: value}, {
             projection: {
                 _id: 0,
                 id: 1,
@@ -21,7 +38,7 @@ export const usersRepository = {
             login: user.accountData.login,
             email: user.accountData.email,
             createdAt: user.accountData.createdAt
-        } : null;
+        } : null;*/
     },
     async findByFieldWithHash(field: string, value: string) {
         return await usersCollection.findOne({[field]: value}, {projection: {_id: 0}});

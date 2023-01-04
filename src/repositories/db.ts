@@ -40,8 +40,10 @@ export const UserModel = mongoose.model('users', userSchema);
 export async function runDb() {
     try {
         await client.connect();
+        await mongoose.connect(mongoURI);
     } catch {
         await client.close();
+        await mongoose.connection.close();
     }
 }
 export async function stopDb() {
