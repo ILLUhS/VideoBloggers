@@ -1,4 +1,4 @@
-import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "./db";
+import {blogsCollection, commentsCollection, postsCollection, UserModel, usersCollection} from "./db";
 import {BlogsViewModel} from "../types/models/blogs-view-model";
 import {UserViewModel} from "../types/models/user-view-model";
 import {CommentsViewModel} from "../types/models/comments-view-model";
@@ -115,6 +115,20 @@ export const queryRepository = {
             }});
     },
     async getUsersWithQueryParam(searchParams: QueryParamsModel) {
+        /*const users = await UserModel.find().or([
+                {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+                {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
+            ])
+            .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
+            .limit(searchParams.pageSize)
+            .sort([[searchParams.sortBy, searchParams.sortDirection]])
+            .select({
+                _id: 0,
+                id: 1,
+                'accountData.login': 1,
+                'accountData.email': 1,
+                'accountData.createdAt': 1
+            }).exec();*/
         const users = await usersCollection.find({
                 $or:
                     [

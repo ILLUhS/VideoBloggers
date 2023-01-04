@@ -1,4 +1,5 @@
 import {SortDirection} from "mongodb";
+import {SortOrder} from "mongoose";
 
 export type QueryParamsModel = {
     searchNameTerm: string;
