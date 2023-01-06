@@ -1,4 +1,4 @@
-export type RefreshTokensMetaModel = {
+export type RefreshTokensMetaType = {
     issuedAt: number;
     expirationAt: number;
     deviceId: string;

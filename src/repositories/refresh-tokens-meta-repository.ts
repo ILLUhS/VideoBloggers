@@ -1,24 +1,31 @@
-import {refreshTokensMetaCollection} from "./db";
+import {refreshTokensMetaCollection, RefreshTokensMetaModel} from "./db";
 
 export const refreshTokensMetaRepository = {
     async find(issuedAt: number, deviceId: string, userId: string): Promise<boolean> {
-        const result = await refreshTokensMetaCollection.findOne({
-            userId: userId,
+        const result = await RefreshTokensMetaModel.findOne({
             issuedAt: issuedAt,
-            deviceId: deviceId
-        }, {projection: {_id: 0}});
+            deviceId: deviceId,
+            userId: userId
+        }).exec();
         return !!result;  //!! - конвертирует переменную в логическое значение
 
     },
     async create(issuedAt: number, expirationAt: number, deviceId: string, deviceIp: string, deviceName: string, userId: string): Promise<boolean> {
-        return (await refreshTokensMetaCollection.insertOne({
-            issuedAt: issuedAt,
-            expirationAt: expirationAt,
-            deviceId: deviceId,
-            deviceIp: deviceIp,
-            deviceName: deviceName,
-            userId: userId
-        })).acknowledged;
+        try {
+            await RefreshTokensMetaModel.create({
+                issuedAt: issuedAt,
+                expirationAt: expirationAt,
+                deviceId: deviceId,
+                deviceIp: deviceIp,
+                deviceName: deviceName,
+                userId: userId
+            });
+            return true;
+        }
+        catch (e) {
+            console.log(e)
+            return false;
+        }
     },
     async update(issuedAt: number, expirationAt: number, deviceId: string,
                  deviceIp: string, userId: string): Promise<boolean> {

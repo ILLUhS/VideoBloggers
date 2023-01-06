@@ -21,8 +21,8 @@ export const jwtService = {
     async getPayloadByRefreshToken(token: string): Promise<RefreshTokenPayloadType | null> {
         try {
             const payload: any = jwt.verify(token, settings.RefreshJWT_SECRET!);
-            const tokenIsValid = await refreshTokensMetaRepository.find(payload.issuedAt, payload.deviceId, payload.userId);
-            if(tokenIsValid)
+            const tokenIsValid = await refreshTokensMetaRepository.find(payload.iat, payload.deviceId, payload.userId);
+            if(!tokenIsValid)
                 return null;
             return {
                 deviceId: payload.deviceId,
@@ -36,7 +36,7 @@ export const jwtService = {
     },
     async createRefreshJWT(userId: string, deviceName: string, deviceIp: string) {
         const deviceId = uuidv4();
-        const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20s'});
+        const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '2000s'});
         const payload = JSON.parse(Buffer.from(token.split('.')[1], "base64").toString("ascii"));
         await refreshTokensMetaRepository.create(payload.iat, payload.exp, deviceId, deviceIp, deviceName, userId);
         return token;
