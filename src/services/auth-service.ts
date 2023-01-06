@@ -114,10 +114,8 @@ export const authService = {
     },
     async setNewPassword(id: string, newPassword: string) {
         await usersRepository.updateOneField({'id': id}, {'passwordRecovery.isUsed': true}); //update passwordRecovery status
-        //await usersRepository.updatePassRecoveryStatus(id);
         const passwordSalt = await bcrypt.genSalt();
         const newPasswordHash = await this._generateHash(newPassword, passwordSalt);
         return await usersRepository.updateOneField({'id': id}, {'accountData.passwordHash': newPasswordHash}); //update password hash
-        //return await usersRepository.updatePassword(id, newPasswordHash);
     }
 }
