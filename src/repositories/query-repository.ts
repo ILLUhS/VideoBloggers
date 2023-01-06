@@ -1,9 +1,9 @@
-import {blogsCollection, commentsCollection, postsCollection, UserModel, usersCollection} from "./db";
+import {blogsCollection, commentsCollection, postsCollection, UserModel} from "./db";
 import {BlogsViewModel} from "../types/models/blogs-view-model";
 import {UserViewModel} from "../types/models/user-view-model";
 import {CommentsViewModel} from "../types/models/comments-view-model";
 import {QueryParamsModel} from "../types/models/query-params-model";
-import {FilterType} from "../types/filter-type";
+import {FilterQueryType} from "../types/filter-query-type";
 
 export const queryRepository = {
     async getBlogsWithQueryParam(searchParams: QueryParamsModel) {
@@ -45,17 +45,7 @@ export const queryRepository = {
                 createdAt: 1
             }});
     },
-    async returnAllBlogs() {
-        return blogsCollection.find().project({
-            _id: 0,
-            id: 1,
-            name: 1,
-            description: 1,
-            websiteUrl: 1,
-            createdAt: 1
-        }).toArray();
-    },
-    async getPotsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterType) {
+    async getPotsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterQueryType) {
         if(!filter)
             filter = {};
         const posts = await postsCollection.find(filter,
@@ -89,18 +79,6 @@ export const queryRepository = {
                 createdAt: post.createdAt
             }))
         }
-    },
-    async returnAllPosts() {
-        return postsCollection.find().project({
-            _id: 0,
-            id: 1,
-            title: 1,
-            shortDescription: 1,
-            content: 1,
-            blogId: 1,
-            blogName: 1,
-            createdAt: 1
-        }).toArray();
     },
     async findPostById(id: string) {
         return postsCollection.findOne({id: id}, {projection: {
@@ -172,33 +150,25 @@ export const queryRepository = {
         };
     },
     async findUserById(id: string): Promise<UserViewModel | null> {
-        const user = await usersCollection.findOne({id: id}, {projection: {
+        const user = await UserModel.findOne({id: id}).select({
+            _id: 0,
+            id: 1,
+            'accountData.login': 1,
+            'accountData.email': 1,
+            'accountData.createdAt': 1
+        }).exec();
+        /*const user = await usersCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
                 'accountData.login': 1,
                 'accountData.email': 1,
                 'accountData.createdAt': 1
-            }});
+            }});*/
         return user ? {
             id: user.id,
             login: user.accountData.login,
             email: user.accountData.email,
             createdAt: user.accountData.createdAt
-        } : null;
-    },
-    async findAuthUserById(id: string) {
-        const foundUser = await usersCollection.findOne({id: id}, {projection: {
-                _id: 0,
-                id: 1,
-                'accountData.login': 1,
-                'accountData.email': 1,
-                'accountData.createdAt': 1
-            }});
-        return foundUser ? {
-            id: foundUser.id,
-            login: foundUser.accountData.login,
-            email: foundUser.accountData.email,
-            createdAt: foundUser.accountData.createdAt
         } : null;
     },
     async findCommentById(id: string): Promise<CommentsViewModel | null> {
@@ -211,7 +181,7 @@ export const queryRepository = {
                 createdAt: 1
             }});
     },
-    async getCommentsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterType) {
+    async getCommentsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterQueryType) {
         if(!filter)
             filter = {};
         const comments = await commentsCollection.find(filter,
