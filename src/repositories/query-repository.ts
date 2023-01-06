@@ -115,7 +115,7 @@ export const queryRepository = {
             }});
     },
     async getUsersWithQueryParam(searchParams: QueryParamsModel) {
-        /*const users = await UserModel.find().or([
+        const users = await UserModel.find().or([
                 {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
                 {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
             ])
@@ -128,8 +128,8 @@ export const queryRepository = {
                 'accountData.login': 1,
                 'accountData.email': 1,
                 'accountData.createdAt': 1
-            }).exec();*/
-        const users = await usersCollection.find({
+            }).exec();
+        /*const users = await usersCollection.find({
                 $or:
                     [
                         {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
@@ -146,14 +146,18 @@ export const queryRepository = {
             'accountData.login': 1,
             'accountData.email': 1,
             'accountData.createdAt': 1
-        }).toArray();
-        const usersCount = await usersCollection.countDocuments({
+        }).toArray();*/
+        const usersCount = await UserModel.countDocuments().or([
+            {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
+            {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
+        ]).exec();
+        /*const usersCount = await usersCollection.countDocuments({
             $or:
                 [
                     {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
                     {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
                 ]
-        });
+        });*/
         return {
             pagesCount: Math.ceil(usersCount / searchParams.pageSize),
             page: searchParams.pageNumber,

@@ -5,8 +5,8 @@ import {usersService} from "../services/users-service";
 import {postsService} from "../services/posts-service";
 import {QueryParamsModel} from "../types/models/query-params-model";
 import {ErrorsType} from "../types/errors-type";
-import {SortDirection} from "mongodb";
 import {authService} from "../services/auth-service";
+import {SortOrder} from "mongoose";
 
 export const queryParamsValidation = async (req: Request, res: Response, next: NextFunction) => {
     const searchNameTerm = req.query.searchNameTerm || '';
@@ -15,7 +15,7 @@ export const queryParamsValidation = async (req: Request, res: Response, next: N
     const pageNumber = req.query.pageNumber || 1;
     const pageSize = req.query.pageSize || 10;
     const sortBy = req.query.sortBy || 'createdAt';
-    let sortDirection: SortDirection = 'desc';
+    let sortDirection: SortOrder = 'desc';
     if(String(req.query.sortDirection) === 'asc')
         sortDirection = 'asc';
     const params: QueryParamsModel = {

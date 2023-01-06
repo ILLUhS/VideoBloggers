@@ -1,4 +1,3 @@
-import {SortDirection} from "mongodb";
 import {SortOrder} from "mongoose";
 
 export type QueryParamsModel = {
@@ -8,5 +7,5 @@ export type QueryParamsModel = {
     pageNumber: number;
     pageSize: number;
     sortBy: string;
-    sortDirection: SortDirection;
+    sortDirection: SortOrder;
 }
