@@ -59,7 +59,9 @@ export const authService = {
             return false;
         if(user.emailConfirmation.isConfirmed)
             return false;
-        return await usersRepository.updateConfirmation(user.id);
+        return await usersRepository.updateOneField({'id': user.id},
+            {'emailConfirmation.isConfirmed': true});//set confirmation status as true
+        //return await usersRepository.updateConfirmation(user.id);
     },
     async confirmEmailResend(email: string): Promise<boolean> {
         const user = await usersRepository.findByFieldWithHash('accountData.email', email);
@@ -70,7 +72,9 @@ export const authService = {
         /*if(add(new Date(), {hours: 24}) < add(user.emailConfirmation.expirationTime, {seconds: 120}))
             return false;*/
         user.emailConfirmation.confirmationCode = uuidv4();
-        await usersRepository.updateConfirmationCode(user.id, user.emailConfirmation.confirmationCode);
+        await usersRepository.updateOneField({'id': user.id},
+            {'emailConfirmation.confirmationCode': user.emailConfirmation.confirmationCode});//update confirmation code
+        //await usersRepository.updateConfirmationCode(user.id, user.emailConfirmation.confirmationCode);
         try {
             await emailManager.sendEmailConfirmationMessage(user);
             //await usersRepository.updateExpirationTime(user.id, add(new Date(), {hours: 24}));
@@ -112,9 +116,11 @@ export const authService = {
         return true;
     },
     async setNewPassword(id: string, newPassword: string) {
-        await usersRepository.updatePassRecoveryStatus(id);
+        await usersRepository.updateOneField({'id': id}, {'passwordRecovery.isUsed': true}); //update passwordRecovery status
+        //await usersRepository.updatePassRecoveryStatus(id);
         const passwordSalt = await bcrypt.genSalt();
         const newPasswordHash = await this._generateHash(newPassword, passwordSalt);
-        return await usersRepository.updatePassword(id, newPasswordHash);
+        return await usersRepository.updateOneField({'id': id}, {'accountData.passwordHash': newPasswordHash}); //update password hash
+        //return await usersRepository.updatePassword(id, newPasswordHash);
     }
 }

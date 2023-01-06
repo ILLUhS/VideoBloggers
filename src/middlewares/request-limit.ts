@@ -1,8 +1,8 @@
 import {NextFunction, Request, Response} from "express";
-import {RequestList} from "../types/request-list";
-let requestArr:RequestList[] = [];
+import {RequestListType} from "../types/request-list-type";
+let requestArr:RequestListType[] = [];
 export const requestLimit = async (req: Request, res: Response, next: NextFunction) => {
-        const newRequest: RequestList = {
+        const newRequest: RequestListType = {
         ip: req.ip,
         path: req.baseUrl + req.path,
         date: (new Date()).valueOf()

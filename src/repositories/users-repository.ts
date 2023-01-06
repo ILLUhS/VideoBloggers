@@ -1,12 +1,8 @@
 import {UserCreateModel} from "../types/models/user-create-model";
 import {UserModel, usersCollection} from "./db";
 import {UserViewModel} from "../types/models/user-view-model";
-type filter = {
-    [filed: string]: string;
-};
-type update = {
-    [filed: string]: string;
-}
+import {FilterOneFieldType} from "../types/filter-one-field-type";
+
 export const usersRepository = {
     async create(newUser: UserCreateModel): Promise<boolean> {
         try {
@@ -102,11 +98,10 @@ export const usersRepository = {
             {$set: {'passwordRecovery.isUsed': true}})).matchedCount === 1;
     },
     async updatePassword(id: string, newPasswordHash: string): Promise<boolean> {
-        await this.updateOneField({'id': id}, {'newPasswordHash': newPasswordHash})
         return (await usersCollection.updateOne({id: id},
             {$set: {'accountData.passwordHash': newPasswordHash}})).matchedCount === 1;
     },
-    async updateOneField(filter: filter, update: update) {
+    async updateOneField(filter: FilterOneFieldType, update: UpdateOneFieldType) {
         return (await UserModel.updateOne(filter,
             update).exec()).matchedCount === 1;
     }
