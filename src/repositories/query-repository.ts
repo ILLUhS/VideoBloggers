@@ -1,4 +1,4 @@
-import {blogsCollection, commentsCollection, postsCollection, UserModel} from "./db";
+import {blogsCollection, CommentsModel, postsCollection, UserModel} from "./db";
 import {BlogsViewModel} from "../types/models/blogs-view-model";
 import {UserViewModel} from "../types/models/user-view-model";
 import {CommentsViewModel} from "../types/models/comments-view-model";
@@ -107,35 +107,10 @@ export const queryRepository = {
                 'accountData.email': 1,
                 'accountData.createdAt': 1
             }).exec();
-        /*const users = await usersCollection.find({
-                $or:
-                    [
-                        {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
-                        {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
-                    ]
-            },
-            {
-                skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
-                limit: searchParams.pageSize,
-                sort: [[searchParams.sortBy, searchParams.sortDirection]]
-            }).project({
-            _id: 0,
-            id: 1,
-            'accountData.login': 1,
-            'accountData.email': 1,
-            'accountData.createdAt': 1
-        }).toArray();*/
         const usersCount = await UserModel.countDocuments().or([
             {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
             {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
         ]).exec();
-        /*const usersCount = await usersCollection.countDocuments({
-            $or:
-                [
-                    {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
-                    {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
-                ]
-        });*/
         return {
             pagesCount: Math.ceil(usersCount / searchParams.pageSize),
             page: searchParams.pageNumber,
@@ -157,13 +132,6 @@ export const queryRepository = {
             'accountData.email': 1,
             'accountData.createdAt': 1
         }).exec();
-        /*const user = await usersCollection.findOne({id: id}, {projection: {
-                _id: 0,
-                id: 1,
-                'accountData.login': 1,
-                'accountData.email': 1,
-                'accountData.createdAt': 1
-            }});*/
         return user ? {
             id: user.id,
             login: user.accountData.login,
@@ -172,32 +140,31 @@ export const queryRepository = {
         } : null;
     },
     async findCommentById(id: string): Promise<CommentsViewModel | null> {
-        return commentsCollection.findOne({id: id}, {projection:{
-                _id: 0,
-                id: 1,
-                content: 1,
-                userId: 1,
-                userLogin: 1,
-                createdAt: 1
-            }});
-    },
-    async getCommentsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterQueryType) {
-        if(!filter)
-            filter = {};
-        const comments = await commentsCollection.find(filter,
-            {
-                skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
-                limit: searchParams.pageSize,
-                sort: [[searchParams.sortBy, searchParams.sortDirection]]
-            }).project({
+        return await CommentsModel.findOne({id: id}).select({
             _id: 0,
             id: 1,
             content: 1,
             userId: 1,
             userLogin: 1,
             createdAt: 1
-        }).toArray();
-        const commentsCount = await commentsCollection.countDocuments(filter);
+        }).exec();
+    },
+    async getCommentsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterQueryType) {
+        if(!filter)
+            filter = {};
+        const comments = await CommentsModel.find(filter)
+            .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
+            .limit(searchParams.pageSize)
+            .sort([[searchParams.sortBy, searchParams.sortDirection]])
+            .select({
+                _id: 0,
+                id: 1,
+                content: 1,
+                userId: 1,
+                userLogin: 1,
+                createdAt: 1
+            }).exec();
+        const commentsCount = await CommentsModel.countDocuments(filter).exec();
         return {
             pagesCount: Math.ceil(commentsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
