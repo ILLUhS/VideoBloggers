@@ -1,3 +1,3 @@
 export type FilterType = {
-    [field: string]: string;
+    [field: string]: any;
 }

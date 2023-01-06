@@ -32,10 +32,27 @@ const userSchema = new mongoose.Schema<UsersCollectionModel>({
         confirmationCode: String,
         expirationTime: Date,
         isConfirmed: String
+    },
+    passwordRecovery: {
+        type: {
+            recoveryCode: String,
+            expirationTime: Date,
+            isUsed: Boolean
+        },
+        default: null
     }
 });
+const commentsSchema = new mongoose.Schema<CommentsCollectionModel>({
+    id: String,
+    content: String,
+    userId: String,
+    userLogin: String,
+    createdAt: String,
+    postId: String
+});
 
-export const UserModel = mongoose.model('users', userSchema);
+export const CommentsModel = mongoose.model("comments", commentsSchema);
+export const UserModel = mongoose.model("users", userSchema);
 
 export async function runDb() {
     try {

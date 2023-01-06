@@ -1,5 +1,5 @@
 import {UserCreateModel} from "../types/models/user-create-model";
-import {UserModel, usersCollection} from "./db";
+import {UserModel} from "./db";
 import {UserViewModel} from "../types/models/user-view-model";
 import {FilterOneFieldType} from "../types/filter-one-field-type";
 
@@ -13,8 +13,6 @@ export const usersRepository = {
             console.log(e);
             return false
         }
-
-
         //return (await usersCollection.insertOne({...newUser})).acknowledged;
     },
     async findByField(field: string, value: string): Promise<UserViewModel | null> {
@@ -94,12 +92,16 @@ export const usersRepository = {
             })).matchedCount === 1;*/
     },
     async updatePassRecoveryStatus(id: string): Promise<boolean> {
-        return (await usersCollection.updateOne({id: id},
-            {$set: {'passwordRecovery.isUsed': true}})).matchedCount === 1;
+        return (await UserModel.updateOne({id: id},
+            {'passwordRecovery.isUsed': true}).exec()).matchedCount === 1;
+        /*return (await usersCollection.updateOne({id: id},
+            {$set: {'passwordRecovery.isUsed': true}})).matchedCount === 1;*/
     },
     async updatePassword(id: string, newPasswordHash: string): Promise<boolean> {
-        return (await usersCollection.updateOne({id: id},
-            {$set: {'accountData.passwordHash': newPasswordHash}})).matchedCount === 1;
+        return (await UserModel.updateOne({id: id},
+            {'accountData.passwordHash': newPasswordHash}).exec()).matchedCount === 1;
+        /*return (await usersCollection.updateOne({id: id},
+            {$set: {'accountData.passwordHash': newPasswordHash}})).matchedCount === 1;*/
     },
     async updateOneField(filter: FilterOneFieldType, update: UpdateOneFieldType) {
         return (await UserModel.updateOne(filter,

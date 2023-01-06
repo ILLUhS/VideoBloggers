@@ -34,8 +34,3 @@ usersRouter.delete('/:id', authorizationBasicGuard, async (req: Request, res: Re
     else
         return res.sendStatus(404);
 });
-/*
-usersRouter.put('/:id', async (req: Request, res: Response) => {
-    await usersRepository.updateOneField({'id': String(req.params.id)}, {'accountData.login': String(req.body.login)});
-    return res.status(200).json(await usersRepository.findByField('id', String(req.params.id)));
-})*/
