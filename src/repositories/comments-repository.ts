@@ -1,11 +1,11 @@
 import {CommentCreateType} from "../types/create-model-types/comment-create-type";
 import {CommentUpdateType} from "../types/update-model-types/comment-update-type";
-import {CommentsModel} from "./db";
+import {CommentModel} from "./db";
 
 export const commentsRepository = {
     async create(newComment: CommentCreateType) {
         try {
-            await CommentsModel.create(newComment);
+            await CommentModel.create(newComment);
             return true;
         }
         catch (e) {
@@ -14,13 +14,13 @@ export const commentsRepository = {
         }
     },
     async deleteAll(): Promise<boolean> {
-        return (await CommentsModel.deleteMany().exec()).acknowledged;
+        return (await CommentModel.deleteMany().exec()).acknowledged;
     },
     async deleteByTd(id: string): Promise<boolean> {
-        return (await CommentsModel.deleteOne({id: id}).exec()).deletedCount === 1;
+        return (await CommentModel.deleteOne({id: id}).exec()).deletedCount === 1;
     },
     async update(updateComment: CommentUpdateType): Promise<boolean> {
-        return (await CommentsModel.updateOne({id: updateComment.id},
+        return (await CommentModel.updateOne({id: updateComment.id},
             {content: updateComment.content}).exec()).matchedCount === 1;
     }
 }

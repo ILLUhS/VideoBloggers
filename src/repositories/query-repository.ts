@@ -1,4 +1,4 @@
-import {blogsCollection, CommentsModel, postsCollection, UserModel} from "./db";
+import {blogsCollection, CommentModel, postsCollection, UserModel} from "./db";
 import {BlogsViewType} from "../types/view-model-types/blogs-view-type";
 import {UserViewType} from "../types/view-model-types/user-view-type";
 import {CommentsViewType} from "../types/view-model-types/comments-view-type";
@@ -140,7 +140,7 @@ export const queryRepository = {
         } : null;
     },
     async findCommentById(id: string): Promise<CommentsViewType | null> {
-        return await CommentsModel.findOne({id: id}).select({
+        return await CommentModel.findOne({id: id}).select({
             _id: 0,
             id: 1,
             content: 1,
@@ -152,7 +152,7 @@ export const queryRepository = {
     async getCommentsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType) {
         if(!filter)
             filter = {};
-        const comments = await CommentsModel.find(filter)
+        const comments = await CommentModel.find(filter)
             .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
             .limit(searchParams.pageSize)
             .sort([[searchParams.sortBy, searchParams.sortDirection]])
@@ -164,7 +164,7 @@ export const queryRepository = {
                 userLogin: 1,
                 createdAt: 1
             }).exec();
-        const commentsCount = await CommentsModel.countDocuments(filter).exec();
+        const commentsCount = await CommentModel.countDocuments(filter).exec();
         return {
             pagesCount: Math.ceil(commentsCount / searchParams.pageSize),
             page: searchParams.pageNumber,

@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema<UsersCollectionType>({
         default: null
     }
 });
-const commentsSchema = new mongoose.Schema<CommentsCollectionType>({
+const commentSchema = new mongoose.Schema<CommentsCollectionType>({
     id: String,
     content: String,
     userId: String,
@@ -58,7 +58,7 @@ const refreshTokensMetaSchema = new mongoose.Schema<RefreshTokensMetaType>({
     deviceName: String,
     userId: String
 });
-const blogsSchema = new mongoose.Schema<BlogsCollectionType>({
+const blogSchema = new mongoose.Schema<BlogsCollectionType>({
     id: String,
     name: String,
     description: String,
@@ -73,11 +73,13 @@ const postSchema = new mongoose.Schema<PostsCollectionType>({
     blogId: String,
     blogName: String,
     createdAt: String
-})
+});
 
-export const CommentsModel = mongoose.model("comments", commentsSchema);
+export const CommentModel = mongoose.model("comments", commentSchema);
 export const UserModel = mongoose.model("users", userSchema);
 export const RefreshTokensMetaModel = mongoose.model("refreshtokensmetas", refreshTokensMetaSchema);
+export const BlogModel = mongoose.model("blogs", blogSchema);
+export const PostModel = mongoose.model("posts", postSchema);
 
 export async function runDb() {
     try {
