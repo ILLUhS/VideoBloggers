@@ -1,12 +1,12 @@
 import {blogsCollection, CommentsModel, postsCollection, UserModel} from "./db";
-import {BlogsViewModel} from "../types/models/blogs-view-model";
-import {UserViewModel} from "../types/models/user-view-model";
-import {CommentsViewModel} from "../types/models/comments-view-model";
-import {QueryParamsModel} from "../types/models/query-params-model";
+import {BlogsViewType} from "../types/view-model-types/blogs-view-type";
+import {UserViewType} from "../types/view-model-types/user-view-type";
+import {CommentsViewType} from "../types/view-model-types/comments-view-type";
+import {QueryParamsType} from "../types/query-params-type";
 import {FilterQueryType} from "../types/filter-query-type";
 
 export const queryRepository = {
-    async getBlogsWithQueryParam(searchParams: QueryParamsModel) {
+    async getBlogsWithQueryParam(searchParams: QueryParamsType) {
         const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
@@ -35,7 +35,7 @@ export const queryRepository = {
             }))
         }
     },
-    async findBlogById(id: string): Promise<BlogsViewModel | null> {
+    async findBlogById(id: string): Promise<BlogsViewType | null> {
         return blogsCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
@@ -45,7 +45,7 @@ export const queryRepository = {
                 createdAt: 1
             }});
     },
-    async getPotsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterQueryType) {
+    async getPotsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType) {
         if(!filter)
             filter = {};
         const posts = await postsCollection.find(filter,
@@ -92,7 +92,7 @@ export const queryRepository = {
                 createdAt: 1
             }});
     },
-    async getUsersWithQueryParam(searchParams: QueryParamsModel) {
+    async getUsersWithQueryParam(searchParams: QueryParamsType) {
         const users = await UserModel.find().or([
                 {'accountData.login': {$regex: searchParams.searchLoginTerm, $options: 'i'}},
                 {'accountData.email': {$regex: searchParams.searchEmailTerm, $options: 'i'}}
@@ -124,7 +124,7 @@ export const queryRepository = {
             }))
         };
     },
-    async findUserById(id: string): Promise<UserViewModel | null> {
+    async findUserById(id: string): Promise<UserViewType | null> {
         const user = await UserModel.findOne({id: id}).select({
             _id: 0,
             id: 1,
@@ -139,7 +139,7 @@ export const queryRepository = {
             createdAt: user.accountData.createdAt
         } : null;
     },
-    async findCommentById(id: string): Promise<CommentsViewModel | null> {
+    async findCommentById(id: string): Promise<CommentsViewType | null> {
         return await CommentsModel.findOne({id: id}).select({
             _id: 0,
             id: 1,
@@ -149,7 +149,7 @@ export const queryRepository = {
             createdAt: 1
         }).exec();
     },
-    async getCommentsWithQueryParam(searchParams: QueryParamsModel, filter?: FilterQueryType) {
+    async getCommentsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType) {
         if(!filter)
             filter = {};
         const comments = await CommentsModel.find(filter)

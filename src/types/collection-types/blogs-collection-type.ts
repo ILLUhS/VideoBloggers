@@ -1,4 +1,4 @@
-export type BlogsViewModel = {
+export type BlogsCollectionType = {
     id: string;
     name: string;
     description: string;

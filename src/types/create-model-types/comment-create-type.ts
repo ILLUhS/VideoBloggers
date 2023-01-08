@@ -1,4 +1,4 @@
-export type CommentCreateModel = {
+export type CommentCreateType = {
     id: string;
     content: string;
     userId: string;

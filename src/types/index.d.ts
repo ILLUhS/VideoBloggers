@@ -1,12 +1,12 @@
-import {UserViewModel} from "./models/user-view-model";
-import {QueryParamsModel} from "./models/query-params-model";
+import {UserViewType} from "./view-model-types/user-view-type";
+import {QueryParamsType} from "./query-params-type";
 import {RefreshTokenPayloadType} from "./refresh-token-payload-type";
 
 declare global {
     declare namespace Express {
         export interface Request {
-            user: UserViewModel | null;
-            searchParams: QueryParamsModel | null;
+            user: UserViewType | null;
+            searchParams: QueryParamsType | null;
             payload: RefreshTokenPayloadType | null;
         }
     }

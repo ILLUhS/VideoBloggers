@@ -3,7 +3,7 @@ import {body, validationResult, CustomValidator, oneOf} from 'express-validator'
 import {blogsService} from "../services/blogs-service";
 import {usersService} from "../services/users-service";
 import {postsService} from "../services/posts-service";
-import {QueryParamsModel} from "../types/models/query-params-model";
+import {QueryParamsType} from "../types/query-params-type";
 import {ErrorsType} from "../types/errors-type";
 import {authService} from "../services/auth-service";
 import {SortOrder} from "mongoose";
@@ -18,7 +18,7 @@ export const queryParamsValidation = async (req: Request, res: Response, next: N
     let sortDirection: SortOrder = 'desc';
     if(String(req.query.sortDirection) === 'asc')
         sortDirection = 'asc';
-    const params: QueryParamsModel = {
+    const params: QueryParamsType = {
         searchNameTerm: String(searchNameTerm),
         searchLoginTerm: String(searchLoginTerm),
         searchEmailTerm: String(searchEmailTerm),

@@ -1,15 +1,15 @@
 import {postsCollection} from "./db";
-import {PostCreateModel} from "../types/models/post-create-model";
-import {PostUpdateModel} from "../types/models/post-update-model";
+import {PostCreateType} from "../types/create-model-types/post-create-type";
+import {PostUpdateType} from "../types/update-model-types/post-update-type";
 
 export const postsRepository = {       //объект с методами управления данными
     async deleteByTd(id: string): Promise<boolean> {
         return (await postsCollection.deleteOne({id: id})).deletedCount === 1;
     },
-    async create(newPost: PostCreateModel): Promise<boolean> {
+    async create(newPost: PostCreateType): Promise<boolean> {
         return (await postsCollection.insertOne({...newPost})).acknowledged;
     },
-    async update(updatePost: PostUpdateModel): Promise<boolean> {
+    async update(updatePost: PostUpdateType): Promise<boolean> {
         return (await postsCollection.updateOne({id: updatePost.id}, { $set:{
                 title: updatePost.title,
                 shortDescription: updatePost.shortDescription,

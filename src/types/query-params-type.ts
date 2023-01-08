@@ -1,6 +1,6 @@
 import {SortOrder} from "mongoose";
 
-export type QueryParamsModel = {
+export type QueryParamsType = {
     searchNameTerm: string;
     searchLoginTerm: string;
     searchEmailTerm: string;

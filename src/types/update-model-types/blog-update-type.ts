@@ -1,7 +1,6 @@
-export type BlogsCollectionModel = {
+export type BlogUpdateType = {
     id: string;
     name: string;
     description: string;
     websiteUrl: string;
-    createdAt: string;
 }

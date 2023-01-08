@@ -1,9 +1,9 @@
-import {UserCreateModel} from "../types/models/user-create-model";
+import {UserCreateType} from "../types/create-model-types/user-create-type";
 import {emailAdapter} from "../adapters/email-adapter";
 import {Buffer} from 'buffer';
 
 export const emailManager = {
-    async sendEmailConfirmationMessage(user: UserCreateModel) {
+    async sendEmailConfirmationMessage(user: UserCreateType) {
         const email = user.accountData.email;
         const subject = 'Confirm your registration';
         const code = Buffer.from(user.emailConfirmation.confirmationCode).toString('base64');

@@ -1,10 +1,10 @@
 import {blogsCollection} from "./db";
-import {BlogUpdateModel} from "../types/models/blog-update-model";
-import {BlogCreateModel} from "../types/models/blog-create-model";
-import {BlogsViewModel} from "../types/models/blogs-view-model";
+import {BlogUpdateType} from "../types/update-model-types/blog-update-type";
+import {BlogCreateType} from "../types/create-model-types/blog-create-type";
+import {BlogsViewType} from "../types/view-model-types/blogs-view-type";
 
 export const blogsRepository = { //объект с методами управления данными
-    async findById(id: string): Promise<BlogsViewModel | null> {
+    async findById(id: string): Promise<BlogsViewType | null> {
         return blogsCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
@@ -17,10 +17,10 @@ export const blogsRepository = { //объект с методами управл
     async deleteByTd(id: string): Promise<boolean> {
         return (await blogsCollection.deleteOne({id: id})).deletedCount === 1;
     },
-    async create(newBlog: BlogCreateModel): Promise<boolean> {
+    async create(newBlog: BlogCreateType): Promise<boolean> {
         return (await blogsCollection.insertOne({...newBlog})).acknowledged;
     },
-    async update(updateBlog: BlogUpdateModel): Promise<boolean> {
+    async update(updateBlog: BlogUpdateType): Promise<boolean> {
         return (await blogsCollection.updateOne({id: updateBlog.id}, { $set: {
                 name: updateBlog.name,
                 description: updateBlog.description,

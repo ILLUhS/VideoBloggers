@@ -1,4 +1,4 @@
-export type CommentUpdateModel = {
+export type CommentUpdateType = {
     id: string;
     content: string;
 }

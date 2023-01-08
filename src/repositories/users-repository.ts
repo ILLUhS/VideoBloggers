@@ -1,10 +1,10 @@
-import {UserCreateModel} from "../types/models/user-create-model";
+import {UserCreateType} from "../types/create-model-types/user-create-type";
 import {UserModel} from "./db";
-import {UserViewModel} from "../types/models/user-view-model";
+import {UserViewType} from "../types/view-model-types/user-view-type";
 import {FilterOneFieldType} from "../types/filter-one-field-type";
 
 export const usersRepository = {
-    async create(newUser: UserCreateModel): Promise<boolean> {
+    async create(newUser: UserCreateType): Promise<boolean> {
         try {
             await UserModel.create(newUser);
             return true;
@@ -14,7 +14,7 @@ export const usersRepository = {
             return false;
         }
     },
-    async findByField(field: string, value: string): Promise<UserViewModel | null> {
+    async findByField(field: string, value: string): Promise<UserViewType | null> {
         const user = await UserModel.findOne({[field]: value}).select({
             _id: 0,
             id: 1,
