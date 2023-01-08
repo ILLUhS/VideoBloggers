@@ -1,4 +1,4 @@
-import {blogsCollection, CommentModel, postsCollection, UserModel} from "./db";
+import {BlogModel, CommentModel, PostModel, UserModel} from "./db";
 import {BlogsViewType} from "../types/view-model-types/blogs-view-type";
 import {UserViewType} from "../types/view-model-types/user-view-type";
 import {CommentsViewType} from "../types/view-model-types/comments-view-type";
@@ -7,7 +7,19 @@ import {FilterQueryType} from "../types/filter-query-type";
 
 export const queryRepository = {
     async getBlogsWithQueryParam(searchParams: QueryParamsType) {
-        const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
+        const blogs = await BlogModel.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}})
+            .skip((searchParams.pageNumber - 1) * searchParams.pageSize,)
+            .limit(searchParams.pageSize)
+            .sort([[searchParams.sortBy, searchParams.sortDirection]])
+            .select({
+                _id: 0,
+                id: 1,
+                name: 1,
+                description: 1,
+                websiteUrl: 1,
+                createdAt: 1
+            }).exec();
+        /*const blogs = await blogsCollection.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}},
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
                 limit: searchParams.pageSize,
@@ -19,8 +31,10 @@ export const queryRepository = {
                 description: 1,
                 websiteUrl: 1,
                 createdAt: 1
-            }).toArray();
-        const blogsCount = await blogsCollection.countDocuments({name:  new RegExp(searchParams.searchNameTerm, 'i')});
+            }).toArray();*/
+        const blogsCount = await BlogModel.countDocuments()
+            .where('name').regex(new RegExp(searchParams.searchNameTerm, 'i')).exec();
+        //const blogsCount = await blogsCollection.countDocuments({name:  new RegExp(searchParams.searchNameTerm, 'i')});
         return {
             pagesCount: Math.ceil(blogsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
@@ -36,19 +50,41 @@ export const queryRepository = {
         }
     },
     async findBlogById(id: string): Promise<BlogsViewType | null> {
-        return blogsCollection.findOne({id: id}, {projection: {
+        return await BlogModel.findOne({id: id}).select({
+            _id: 0,
+            id: 1,
+            name: 1,
+            description: 1,
+            websiteUrl: 1,
+            createdAt: 1
+        }).exec();
+        /*return blogsCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
                 name: 1,
                 description: 1,
                 websiteUrl: 1,
                 createdAt: 1
-            }});
+            }});*/
     },
     async getPotsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType) {
         if(!filter)
             filter = {};
-        const posts = await postsCollection.find(filter,
+        const posts = await PostModel.find(filter)
+            .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
+            .limit(searchParams.pageSize)
+            .sort([[searchParams.sortBy, searchParams.sortDirection]])
+            .select({
+                _id: 0,
+                id: 1,
+                title: 1,
+                shortDescription: 1,
+                content: 1,
+                blogId: 1,
+                blogName: 1,
+                createdAt: 1
+            }).exec();
+        /*const posts = await postsCollection.find(filter,
             {
                 skip: (searchParams.pageNumber - 1) * searchParams.pageSize,
                 limit: searchParams.pageSize,
@@ -62,8 +98,9 @@ export const queryRepository = {
                 blogId: 1,
                 blogName: 1,
                 createdAt: 1
-            }).toArray();
-        const postsCount = await postsCollection.countDocuments(filter);
+            }).toArray();*/
+        const postsCount = await PostModel.countDocuments(filter).exec();
+        //const postsCount = await postsCollection.countDocuments(filter);
         return {
             pagesCount: Math.ceil(postsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
@@ -81,7 +118,17 @@ export const queryRepository = {
         }
     },
     async findPostById(id: string) {
-        return postsCollection.findOne({id: id}, {projection: {
+        return await PostModel.findOne({id: id}).select({
+            _id: 0,
+            id: 1,
+            title: 1,
+            shortDescription: 1,
+            content: 1,
+            blogId: 1,
+            blogName: 1,
+            createdAt: 1
+        }).exec();
+        /*return postsCollection.findOne({id: id}, {projection: {
                 _id: 0,
                 id: 1,
                 title: 1,
@@ -90,7 +137,7 @@ export const queryRepository = {
                 blogId: 1,
                 blogName: 1,
                 createdAt: 1
-            }});
+            }});*/
     },
     async getUsersWithQueryParam(searchParams: QueryParamsType) {
         const users = await UserModel.find().or([
