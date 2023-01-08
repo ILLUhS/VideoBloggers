@@ -13,9 +13,18 @@ export const blogsRepository = { //объект с методами управл
             websiteUrl: 1,
             createdAt: 1
         }).exec();
+        /*return blogsCollection.findOne({id: id}, {projection: {
+                _id: 0,
+                id: 1,
+                name: 1,
+                description: 1,
+                websiteUrl: 1,
+                createdAt: 1
+            }});*/
     },
     async deleteByTd(id: string): Promise<boolean> {
         return (await BlogModel.deleteOne({id: id}).exec()).deletedCount === 1;
+        //return (await blogsCollection.deleteOne({id: id})).deletedCount === 1;
     },
     async create(newBlog: BlogCreateType): Promise<boolean> {
         try {
@@ -26,15 +35,17 @@ export const blogsRepository = { //объект с методами управл
             console.log(e);
             return false;
         }
+        //return (await blogsCollection.insertOne({...newBlog})).acknowledged;
     },
     async update(updateBlog: BlogUpdateType): Promise<boolean> {
         return (await BlogModel.updateOne({id: updateBlog.id}, {
             name: updateBlog.name,
             description: updateBlog.description,
             websiteUrl: updateBlog.websiteUrl
-    }).exec()).matchedCount === 1;
+        }).exec()).matchedCount === 1;
     },
     async deleteAll(): Promise<boolean> {
         return (await BlogModel.deleteMany().exec()).acknowledged;
+        //return (await blogsCollection.deleteMany({})).acknowledged;
     }
 }
