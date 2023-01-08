@@ -6,7 +6,7 @@ import {RefreshTokenPayloadType} from "../types/refresh-token-payload-type";
 
 export const jwtService = {
     async createAccessJWT(userId: string) {
-        return jwt.sign({userId: userId}, settings.JWT_SECRET!, {expiresIn: '10s'});
+        return jwt.sign({userId: userId}, settings.JWT_SECRET!, {expiresIn: '600s'});
     },
     async getUserIdByToken(token: string) {
         try {
@@ -36,13 +36,13 @@ export const jwtService = {
     },
     async createRefreshJWT(userId: string, deviceName: string, deviceIp: string) {
         const deviceId = uuidv4();
-        const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20s'});
+        const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20000s'});
         const payload = JSON.parse(Buffer.from(token.split('.')[1], "base64").toString("ascii"));
         await refreshTokensMetaRepository.create(payload.iat, payload.exp, deviceId, deviceIp, deviceName, userId);
         return token;
     },
     async reCreateRefreshJWT(userId: string, deviceId: string, deviceIp: string) {
-        const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20s'});
+        const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20000s'});
         const payload = JSON.parse(Buffer.from(token.split('.')[1], "base64").toString("ascii"));
         await refreshTokensMetaRepository.update(payload.iat, payload.exp, deviceId, deviceIp, payload.userId);
         return token;
