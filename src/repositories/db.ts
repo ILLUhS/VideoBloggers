@@ -1,4 +1,3 @@
-import {MongoClient} from "mongodb";
 import {BlogsCollectionType} from "../types/collection-types/blogs-collection-type";
 import {PostsCollectionType} from "../types/collection-types/posts-collection-type";
 import {UsersCollectionType} from "../types/collection-types/users-collection-type";
@@ -6,19 +5,13 @@ import {settings} from "../config/settings";
 import {CommentsCollectionType} from "../types/collection-types/comments-collection-type";
 import {RefreshTokensMetaType} from "../types/collection-types/refresh-tokens-meta-type";
 import mongoose from "mongoose";
+import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
+
 const mongoURI = settings.MONGO_URL
 if(!mongoURI) {
     throw Error('Bad URL')
 }
-const client = new MongoClient(mongoURI);
-
-const db = client.db();
-
-export const blogsCollection = db.collection<BlogsCollectionType>("blogs");
-export const postsCollection = db.collection<PostsCollectionType>("posts");
-export const usersCollection = db.collection<UsersCollectionType>("users");
-export const commentsCollection = db.collection<CommentsCollectionType>("comments");
-export const refreshTokensMetaCollection = db.collection<RefreshTokensMetaType>("refreshtokensmetas");
+const { Schema } = mongoose;
 
 const userSchema = new mongoose.Schema<UsersCollectionType>({
     id: String,
@@ -43,12 +36,12 @@ const userSchema = new mongoose.Schema<UsersCollectionType>({
     }
 });
 const commentSchema = new mongoose.Schema<CommentsCollectionType>({
-    id: String,
+    id: Schema.Types.String,
     content: String,
     userId: String,
     userLogin: String,
     createdAt: String,
-    postId: String
+    postId: { type: Schema.Types.String, ref: 'posts' }
 });
 const refreshTokensMetaSchema = new mongoose.Schema<RefreshTokensMetaType>({
     issuedAt: Number,
@@ -66,30 +59,40 @@ const blogSchema = new mongoose.Schema<BlogsCollectionType>({
     createdAt: String
 });
 const postSchema = new mongoose.Schema<PostsCollectionType>({
-    id: String,
+    id: Schema.Types.String,
     title: String,
     shortDescription: String,
     content: String,
     blogId: String,
     blogName: String,
     createdAt: String
+}, {toJSON: { virtuals: true }, toObject: { virtuals: true }});
+postSchema.virtual('comments', {
+    ref: 'comments',
+    localField: 'id',
+    foreignField: 'postId'
 });
+const reactionSchema = new mongoose.Schema<ReactionsCollectionType>({
+    id: String,
+    comment: { type: Schema.Types.String, ref: 'comments' },
+    userId: String,
+    reaction: {type: String, enum: ["like", "dislike"]}
+})
 
 export const CommentModel = mongoose.model("comments", commentSchema);
 export const UserModel = mongoose.model("users", userSchema);
 export const RefreshTokensMetaModel = mongoose.model("refreshtokensmetas", refreshTokensMetaSchema);
 export const BlogModel = mongoose.model("blogs", blogSchema);
 export const PostModel = mongoose.model("posts", postSchema);
+export const ReactionModel = mongoose.model("reactions", reactionSchema);
 
 export async function runDb() {
     try {
-        await client.connect();
         await mongoose.connect(mongoURI);
     } catch {
-        await client.close();
         await mongoose.connection.close();
     }
 }
 export async function stopDb() {
-    await client.close();
+    await mongoose.connection.close();
 }
