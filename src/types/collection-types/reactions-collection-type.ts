@@ -1,6 +1,6 @@
 export type ReactionsCollectionType = {
     id: string;
-    comment: string;
+    commentId: string;
     userId: string;
     reaction: string;
 }

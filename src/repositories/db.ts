@@ -42,6 +42,11 @@ const commentSchema = new mongoose.Schema<CommentsCollectionType>({
     userLogin: String,
     createdAt: String,
     postId: { type: Schema.Types.String, ref: 'posts' }
+}, {toJSON: { virtuals: true }, toObject: { virtuals: true }});
+commentSchema.virtual('reactions', {
+    ref: 'reactions',
+    localField: 'id',
+    foreignField: 'commentId'
 });
 const refreshTokensMetaSchema = new mongoose.Schema<RefreshTokensMetaType>({
     issuedAt: Number,
@@ -74,9 +79,9 @@ postSchema.virtual('comments', {
 });
 const reactionSchema = new mongoose.Schema<ReactionsCollectionType>({
     id: String,
-    comment: { type: Schema.Types.String, ref: 'comments' },
+    commentId: { type: Schema.Types.String, ref: 'comments' },
     userId: String,
-    reaction: {type: String, enum: ["like", "dislike"]}
+    reaction: {type: String, enum: ["None", "Like", "Dislike"]}
 })
 
 export const CommentModel = mongoose.model("comments", commentSchema);

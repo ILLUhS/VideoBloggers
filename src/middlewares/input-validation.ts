@@ -8,6 +8,11 @@ import {ErrorsType} from "../types/errors-type";
 import {authService} from "../services/auth-service";
 import {SortOrder} from "mongoose";
 
+enum LIKE_STATUS {
+    "None",
+    "Like",
+    "Dislike"
+}
 export const queryParamsValidation = async (req: Request, res: Response, next: NextFunction) => {
     const searchNameTerm = req.query.searchNameTerm || '';
     const searchLoginTerm = req.query.searchLoginTerm || '';
@@ -91,6 +96,13 @@ const emailIsFree: CustomValidator = async email => {
     else
         return true;
 };
+const likeValid: CustomValidator = async likeStatus => {
+    if(likeStatus in LIKE_STATUS)
+        return true;
+    else
+        throw new Error('LikeStatus is invalid');
+}
+
 export const nameBlogValidation = body('name').trim().isLength({min: 1, max: 15});
 export const descriptionBlogValidation = body('description').trim().isLength({min: 1, max: 500});
 export const websiteUrlBlogValidation = body('websiteUrl').isURL({protocols: ['https']}).isLength({max: 100});
@@ -115,6 +127,7 @@ export const checkEmailForPass = body('email')
     .matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
 export const newPassValidation = body('newPassword').isLength({min: 6, max: 20});
 export const recoveryCodeValidation = body('recoveryCode').custom(checkRecoveryCode);
+export const likeStatusValidation = body('likeStatus').custom(likeValid);
 export const errorsValidation = (req: Request, res: Response, next: NextFunction) => {
     const errors: ErrorsType = {errorsMessages: []};
     for(let i = 0; i < validationResult(req).array({onlyFirstError: true}).length; i++) {

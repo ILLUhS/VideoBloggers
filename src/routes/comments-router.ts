@@ -2,7 +2,7 @@ import {Router, Request, Response} from "express";
 import {queryRepository} from "../repositories/query-repository";
 import {commentsService} from "../services/comments-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
-import {contentCommentValidation, errorsValidation} from "../middlewares/input-validation";
+import {contentCommentValidation, errorsValidation, likeStatusValidation} from "../middlewares/input-validation";
 
 export const commentsRouter = Router({})
 
@@ -35,4 +35,8 @@ commentsRouter.put('/:id', authorizationBearerGuard, contentCommentValidation,
     }
     else
         return res.sendStatus(403);
+});
+commentsRouter.put('/:id/like-status', authorizationBearerGuard, likeStatusValidation,
+    errorsValidation, async (req: Request, res: Response) => {
+    return res.sendStatus(204);
 });
