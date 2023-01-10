@@ -4,11 +4,16 @@ import {commentsService} from "../services/comments-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {contentCommentValidation, errorsValidation, likeStatusValidation} from "../middlewares/input-validation";
 import {likeService} from "../services/like-service";
+import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
 
 export const commentsRouter = Router({})
 
-commentsRouter.get('/:id', async (req: Request, res: Response) => {
-    const foundComment = await queryRepository.findCommentById(String(req.params.id));
+commentsRouter.get('/:id', checkAuthorizationHeaders, async (req: Request, res: Response) => {
+    let foundComment;
+    if(req.user)
+        foundComment = await queryRepository.findCommentById(String(req.params.id), req.user.id);
+    else
+        foundComment = await queryRepository.findCommentById(String(req.params.id));
     if(foundComment)
         return res.status(200).json(foundComment);
     else

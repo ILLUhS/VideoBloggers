@@ -138,15 +138,39 @@ export const queryRepository = {
             createdAt: user.accountData.createdAt
         } : null;
     },
-    async findCommentById(id: string): Promise<CommentsViewType | null> {
-        return await CommentModel.findOne({id: id}).select({
-            _id: 0,
-            id: 1,
-            content: 1,
-            userId: 1,
-            userLogin: 1,
-            createdAt: 1
-        }).exec();
+    async findCommentById(id: string, userId?: string): Promise<CommentsViewType | null> {
+        const comment = await CommentModel.findOne({id: id}).populate('reactions').select({_id: 0, __v: 0}).exec();
+        let myStatus: string = 'None';
+        let likesCount: number = 0;
+        let dislikesCount: number = 0;
+        if(!comment)
+            return null;
+        if(comment.reactions.length > 0) {
+            if (userId) {
+                comment.reactions.forEach(r => {
+                    if (r.userId === userId)
+                        myStatus = r.reaction;
+                });
+            }
+            comment.reactions.forEach(r => {
+                if (r.reaction === "Like")
+                    likesCount++;
+                else dislikesCount++;
+            });
+        }
+        return {
+            id: comment.id,
+            content: comment.content,
+            userId: comment.userId,
+            userLogin: comment.userLogin,
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount: likesCount,
+                dislikesCount: dislikesCount,
+                myStatus: myStatus
+            }
+        }
+
     },
     async getCommentsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType) {
         if(!filter)
