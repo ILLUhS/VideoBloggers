@@ -81,7 +81,7 @@ const reactionSchema = new mongoose.Schema<ReactionsCollectionType>({
     id: String,
     commentId: { type: Schema.Types.String, ref: 'comments' },
     userId: String,
-    reaction: {type: String, enum: ["None", "Like", "Dislike"]}
+    reaction: {type: String, enum: ["Like", "Dislike"]}
 })
 
 export const CommentModel = mongoose.model("comments", commentSchema);

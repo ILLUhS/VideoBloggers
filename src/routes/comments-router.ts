@@ -3,6 +3,7 @@ import {queryRepository} from "../repositories/query-repository";
 import {commentsService} from "../services/comments-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {contentCommentValidation, errorsValidation, likeStatusValidation} from "../middlewares/input-validation";
+import {likeService} from "../services/like-service";
 
 export const commentsRouter = Router({})
 
@@ -38,5 +39,9 @@ commentsRouter.put('/:id', authorizationBearerGuard, contentCommentValidation,
 });
 commentsRouter.put('/:id/like-status', authorizationBearerGuard, likeStatusValidation,
     errorsValidation, async (req: Request, res: Response) => {
+    const foundComment = await queryRepository.findCommentById(String(req.params.id));
+    if (!foundComment)
+        return res.sendStatus(404);
+    await likeService.setLikeDislike(String(req.body.likeStatus), String(req.params.id), req.user!.id);
     return res.sendStatus(204);
 });
