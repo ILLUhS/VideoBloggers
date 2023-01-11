@@ -4,6 +4,7 @@ import {UserViewType} from "../types/view-model-types/user-view-type";
 import {CommentsViewType} from "../types/view-model-types/comments-view-type";
 import {QueryParamsType} from "../types/query-params-type";
 import {FilterQueryType} from "../types/filter-query-type";
+import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
 
 export const queryRepository = {
     async getBlogsWithQueryParam(searchParams: QueryParamsType) {
@@ -140,35 +141,17 @@ export const queryRepository = {
     },
     async findCommentById(id: string, userId?: string): Promise<CommentsViewType | null> {
         const comment = await CommentModel.findOne({id: id}).populate('reactions').select({_id: 0, __v: 0}).exec();
-        let myStatus: string = 'None';
-        let likesCount: number = 0;
-        let dislikesCount: number = 0;
         if(!comment)
             return null;
-        if(comment.reactions.length > 0) {
-            if (userId) {
-                comment.reactions.forEach(r => {
-                    if (r.userId === userId)
-                        myStatus = r.reaction;
-                });
-            }
-            comment.reactions.forEach(r => {
-                if (r.reaction === "Like")
-                    likesCount++;
-                else dislikesCount++;
-            });
-        }
+        const likesInfo = await this.likesInfoMap(comment.reactions, userId);
+
         return {
             id: comment.id,
             content: comment.content,
             userId: comment.userId,
             userLogin: comment.userLogin,
             createdAt: comment.createdAt,
-            likesInfo: {
-                likesCount: likesCount,
-                dislikesCount: dislikesCount,
-                myStatus: myStatus
-            }
+            likesInfo: likesInfo
         }
 
     },
@@ -188,36 +171,40 @@ export const queryRepository = {
             page: searchParams.pageNumber,
             pageSize: searchParams.pageSize,
             totalCount: commentsCount,
-            items: comments.map(comment => {
-                let myStatus: string = 'None';
-                let likesCount: number = 0;
-                let dislikesCount: number = 0;
-                if(comment.reactions.length > 0) {
-                    if (userId) {
-                        comment.reactions.forEach(r => {
-                            if (r.userId === userId)
-                                myStatus = r.reaction;
-                        });
-                    }
-                    comment.reactions.forEach(r => {
-                        if (r.reaction === "Like")
-                            likesCount++;
-                        else dislikesCount++;
-                    });
-                }
+            items: await Promise.all(comments.map(async comment => {
+                const likesInfo = await this.likesInfoMap(comment.reactions, userId);
                 return {
                     id: comment.id,
                     content: comment.content,
                     userId: comment.userId,
                     userLogin: comment.userLogin,
                     createdAt: comment.createdAt,
-                    likesInfo: {
-                        likesCount: likesCount,
-                        dislikesCount: dislikesCount,
-                        myStatus: myStatus
-                    }
+                    likesInfo: likesInfo
                 }
-            })
+            }))
+        }
+    },
+    async likesInfoMap(reactions: ReactionsCollectionType[], userId?: string) {
+        let myStatus: string = 'None';
+        let likesCount: number = 0;
+        let dislikesCount: number = 0;
+        if(reactions.length > 0) {
+            if (userId) {
+                reactions.forEach(r => {
+                    if (r.userId === userId)
+                        myStatus = r.reaction;
+                });
+            }
+            reactions.forEach(r => {
+                if (r.reaction === "Like")
+                    likesCount++;
+                else dislikesCount++;
+            });
+        }
+        return {
+            likesCount: likesCount,
+            dislikesCount: dislikesCount,
+            myStatus: myStatus
         }
     }
 };
