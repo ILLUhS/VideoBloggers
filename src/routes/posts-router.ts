@@ -8,6 +8,7 @@ import {
 import {queryRepository} from "../repositories/query-repository";
 import {postsService} from "../services/posts-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
+import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
 
 export const postsRouter = Router({});
 
@@ -57,9 +58,14 @@ postsRouter.post('/:id/comments', authorizationBearerGuard, postIdIsExist,
         else
             return res.status(409).send('Database write error');
 });
-postsRouter.get('/:id/comments', postIdIsExist, queryParamsValidation,
+postsRouter.get('/:id/comments', postIdIsExist, queryParamsValidation, checkAuthorizationHeaders,
     async (req: Request, res: Response) => {
-    const foundComments = await queryRepository.getCommentsWithQueryParam(req.searchParams!,
-        {postId: String(req.params.id)});
+        let foundComments;
+        if(req.user)
+            foundComments = await queryRepository.getCommentsWithQueryParam(req.searchParams!,
+                {postId: String(req.params.id)}, req.user.id);
+        else
+            foundComments = await queryRepository.getCommentsWithQueryParam(req.searchParams!,
+                {postId: String(req.params.id)});
     return res.status(200).json(foundComments);
 });

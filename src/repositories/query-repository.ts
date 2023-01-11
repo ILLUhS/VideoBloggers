@@ -172,34 +172,52 @@ export const queryRepository = {
         }
 
     },
-    async getCommentsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType) {
+    async getCommentsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType, userId?: string) {
         if(!filter)
             filter = {};
         const comments = await CommentModel.find(filter)
+            .populate('reactions')
             .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
             .limit(searchParams.pageSize)
             .sort([[searchParams.sortBy, searchParams.sortDirection]])
-            .select({
-                _id: 0,
-                id: 1,
-                content: 1,
-                userId: 1,
-                userLogin: 1,
-                createdAt: 1
-            }).exec();
+            .select({_id: 0, __v: 0}).exec();
         const commentsCount = await CommentModel.countDocuments(filter).exec();
+
         return {
             pagesCount: Math.ceil(commentsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
             pageSize: searchParams.pageSize,
             totalCount: commentsCount,
-            items: comments.map(comment => ({
-                id: comment.id,
-                content: comment.content,
-                userId: comment.userId,
-                userLogin: comment.userLogin,
-                createdAt: comment.createdAt
-            }))
+            items: comments.map(comment => {
+                let myStatus: string = 'None';
+                let likesCount: number = 0;
+                let dislikesCount: number = 0;
+                if(comment.reactions.length > 0) {
+                    if (userId) {
+                        comment.reactions.forEach(r => {
+                            if (r.userId === userId)
+                                myStatus = r.reaction;
+                        });
+                    }
+                    comment.reactions.forEach(r => {
+                        if (r.reaction === "Like")
+                            likesCount++;
+                        else dislikesCount++;
+                    });
+                }
+                return {
+                    id: comment.id,
+                    content: comment.content,
+                    userId: comment.userId,
+                    userLogin: comment.userLogin,
+                    createdAt: comment.createdAt,
+                    likesInfo: {
+                        likesCount: likesCount,
+                        dislikesCount: dislikesCount,
+                        myStatus: myStatus
+                    }
+                }
+            })
         }
     }
 };

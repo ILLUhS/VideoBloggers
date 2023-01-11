@@ -1,13 +1,11 @@
-import {MongoClient} from "mongodb";
 import {BlogsCollectionType} from "../types/collection-types/blogs-collection-type";
 import {PostsCollectionType} from "../types/collection-types/posts-collection-type";
 import {UsersCollectionType} from "../types/collection-types/users-collection-type";
 import {CommentsCollectionType} from "../types/collection-types/comments-collection-type";
 import {RefreshTokensMetaType} from "../types/collection-types/refresh-tokens-meta-type";
+import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
 import mongoose from "mongoose";
 import {settings} from "../config/settings";
-
-import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
 
 const mongoURI = settings.MONGO_URL
 if(!mongoURI)
