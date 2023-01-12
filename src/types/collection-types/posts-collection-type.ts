@@ -1,3 +1,5 @@
+import {ReactionsCollectionType} from "./reactions-collection-type";
+
 export type PostsCollectionType = {
     id: string;
     title: string;
@@ -6,4 +8,5 @@ export type PostsCollectionType = {
     blogId: string;
     blogName: string;
     createdAt: string;
+    reactions: ReactionsCollectionType[];
 }

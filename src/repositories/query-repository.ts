@@ -1,4 +1,4 @@
-import {BlogModel, CommentModel, PostModel, UserModel} from "./db";
+import {BlogModel, CommentModel, PostModel, ReactionModel, UserModel} from "./db";
 import {BlogsViewType} from "../types/view-model-types/blogs-view-type";
 import {UserViewType} from "../types/view-model-types/user-view-type";
 import {CommentsViewType} from "../types/view-model-types/comments-view-type";
@@ -80,17 +80,33 @@ export const queryRepository = {
             }))
         }
     },
-    async findPostById(id: string) {
-        return await PostModel.findOne({id: id}).select({
-            _id: 0,
-            id: 1,
-            title: 1,
-            shortDescription: 1,
-            content: 1,
-            blogId: 1,
-            blogName: 1,
-            createdAt: 1
-        }).exec();
+    async findPostById(id: string, userId?: string) {
+        const post = await PostModel.findOne({id: id}).populate('reactions').select({_id: 0, __v: 0}).exec();
+        if(!post)
+            return null;
+        const newestLikes = await ReactionModel.find({entityId: id, reaction: 'Like'})
+            .sort({createdAt: "desc"})
+            .limit(3).select({_id: 0, __v: 0}).exec();
+        const likesInfo = await this.likesInfoMap(post.reactions, userId);
+        return {
+            id: post.id,
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName,
+            createdAt: post.createdAt,
+            extendedLikesInfo: {
+                likesCount: likesInfo.likesCount,
+                dislikesCount: likesInfo.dislikesCount,
+                myStatus: likesInfo.myStatus,
+                newestLikes: newestLikes.map(like => ({
+                    addedAt: like.createdAt,
+                    userId: like.userId,
+                    login: like.login
+                }))
+            }
+        };
     },
     async getUsersWithQueryParam(searchParams: QueryParamsType) {
         const users = await UserModel.find().or([
@@ -144,7 +160,6 @@ export const queryRepository = {
         if(!comment)
             return null;
         const likesInfo = await this.likesInfoMap(comment.reactions, userId);
-
         return {
             id: comment.id,
             content: comment.content,
@@ -153,7 +168,6 @@ export const queryRepository = {
             createdAt: comment.createdAt,
             likesInfo: likesInfo
         }
-
     },
     async getCommentsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType, userId?: string) {
         if(!filter)

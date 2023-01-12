@@ -2,21 +2,26 @@ import {Request, Response, Router} from "express";
 import {authorizationBasicGuard} from "../middlewares/authorization-basic-guard";
 import {
     blogIdPostValidation, contentCommentValidation,
-    contentPostValidation, errorsValidation, postIdIsExist, queryParamsValidation,
+    contentPostValidation, errorsValidation, likeStatusValidation, postIdIsExist, queryParamsValidation,
     shortDescriptionPostValidation, titlePostValidation
 } from "../middlewares/input-validation";
 import {queryRepository} from "../repositories/query-repository";
 import {postsService} from "../services/posts-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
+import {likeService} from "../services/like-service";
 
 export const postsRouter = Router({});
 
 postsRouter.get('/', queryParamsValidation, async (req, res) => {
     return res.status(200).json(await queryRepository.getPotsWithQueryParam(req.searchParams!));
 });
-postsRouter.get('/:id', async (req, res) => {
-    const foundPost = await queryRepository.findPostById(String(req.params.id));
+postsRouter.get('/:id', checkAuthorizationHeaders, async (req, res) => {
+    let foundPost;
+    if(req.user)
+        foundPost = await queryRepository.findPostById(String(req.params.id), req.user.id);
+    else
+        foundPost = await queryRepository.findPostById(String(req.params.id));
     if(foundPost)
         return res.status(200).json(foundPost);
     else
@@ -69,3 +74,11 @@ postsRouter.get('/:id/comments', postIdIsExist, queryParamsValidation, checkAuth
                 {postId: String(req.params.id)});
     return res.status(200).json(foundComments);
 });
+postsRouter.put('/:id/like-status', authorizationBearerGuard, likeStatusValidation,
+    errorsValidation, async (req: Request, res: Response) => {
+        const foundPost = await queryRepository.findPostById(String(req.params.id));
+        if (!foundPost)
+            return res.sendStatus(404);
+        await likeService.setLikeDislike(String(req.body.likeStatus), String(req.params.id), req.user!.id);
+        return res.sendStatus(204);
+    });

@@ -71,10 +71,10 @@ const postSchema = new mongoose.Schema<PostsCollectionType>({
     blogName: String,
     createdAt: String
 }, {toJSON: { virtuals: true }, toObject: { virtuals: true }});
-postSchema.virtual('comments', {
-    ref: 'comments',
+postSchema.virtual('reactions', {
+    ref: 'reactions',
     localField: 'id',
-    foreignField: 'postId'
+    foreignField: 'entityId'
 });
 const reactionSchema = new mongoose.Schema<ReactionsCollectionType>({
     id: String,
