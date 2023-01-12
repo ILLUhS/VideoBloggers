@@ -6,9 +6,10 @@ export const reactionsRepository = {
             await ReactionModel.create(
                 {
                     id: id,
-                    commentId: commentId,
+                    entityId: commentId,
                     userId: userId,
-                    reaction: status
+                    reaction: status,
+                    createdAt: new Date()
                 }
             );
             return true;
@@ -19,13 +20,13 @@ export const reactionsRepository = {
         }
     },
     async update(status: string, commentId: string, userId: string) {
-        return (await ReactionModel.updateOne({commentId: commentId, userId: userId},
+        return (await ReactionModel.updateOne({entityId: commentId, userId: userId},
             {reaction: status}).exec()).matchedCount === 1;
     },
     async find(commentId: string, userId: string) {
-        return await ReactionModel.findOne({commentId: commentId, userId: userId}).select({_id: 0, __v: 0}).exec();
+        return await ReactionModel.findOne({entityId: commentId, userId: userId}).select({_id: 0, __v: 0}).exec();
     },
     async delete(commentId: string, userId: string) {
-        return (await ReactionModel.deleteOne({commentId: commentId, userId: userId}).exec()).deletedCount === 1;
+        return (await ReactionModel.deleteOne({entityId: commentId, userId: userId}).exec()).deletedCount === 1;
     }
 }

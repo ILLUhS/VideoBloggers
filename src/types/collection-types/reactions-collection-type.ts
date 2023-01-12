@@ -1,6 +1,7 @@
 export type ReactionsCollectionType = {
     id: string;
-    commentId: string;
+    entityId: string;
     userId: string;
     reaction: string;
+    createdAt: Date;
 }
