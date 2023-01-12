@@ -80,6 +80,7 @@ const reactionSchema = new mongoose.Schema<ReactionsCollectionType>({
     id: String,
     entityId: String,//{ type: Schema.Types.String, ref: 'comments' },
     userId: String,
+    login: String,
     reaction: {type: String, enum: ["Like", "Dislike"]},
     createdAt: Date
 })
