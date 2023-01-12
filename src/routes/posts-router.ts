@@ -13,8 +13,16 @@ import {likeService} from "../services/like-service";
 
 export const postsRouter = Router({});
 
-postsRouter.get('/', queryParamsValidation, async (req, res) => {
-    return res.status(200).json(await queryRepository.getPotsWithQueryParam(req.searchParams!));
+postsRouter.get('/', checkAuthorizationHeaders, queryParamsValidation, async (req, res) => {
+    let foundPosts;
+    if(req.user)
+        foundPosts = await queryRepository.getPotsWithQueryParam(req.searchParams!, {}, req.user.id);
+    else
+        foundPosts = await queryRepository.getPotsWithQueryParam(req.searchParams!);
+    if(foundPosts)
+        return res.status(200).json(foundPosts);
+    else
+        return res.sendStatus(404);
 });
 postsRouter.get('/:id', checkAuthorizationHeaders, async (req, res) => {
     let foundPost;

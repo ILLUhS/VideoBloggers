@@ -1,4 +1,4 @@
-import {BlogModel, CommentModel, PostModel, ReactionModel, UserModel} from "./db";
+import {BlogModel, CommentModel, PostModel, UserModel} from "./db";
 import {BlogsViewType} from "../types/view-model-types/blogs-view-type";
 import {UserViewType} from "../types/view-model-types/user-view-type";
 import {CommentsViewType} from "../types/view-model-types/comments-view-type";
@@ -46,48 +46,48 @@ export const queryRepository = {
             createdAt: 1
         }).exec();
     },
-    async getPotsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType) {
+    async getPotsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType, userId?: string) {
         if(!filter)
             filter = {};
         const posts = await PostModel.find(filter)
+            .populate('reactions')
             .skip((searchParams.pageNumber - 1) * searchParams.pageSize)
             .limit(searchParams.pageSize)
             .sort([[searchParams.sortBy, searchParams.sortDirection]])
-            .select({
-                _id: 0,
-                id: 1,
-                title: 1,
-                shortDescription: 1,
-                content: 1,
-                blogId: 1,
-                blogName: 1,
-                createdAt: 1
-            }).exec();
+            .select({_id: 0, __v: 0}).exec();
         const postsCount = await PostModel.countDocuments(filter).exec();
         return {
             pagesCount: Math.ceil(postsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
             pageSize: searchParams.pageSize,
             totalCount: postsCount,
-            items: posts.map(post => ({
-                id: post.id,
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.content,
-                blogId: post.blogId,
-                blogName: post.blogName,
-                createdAt: post.createdAt
+            items: await Promise.all(posts.map(async post => {
+                const likesInfoMapped = await this.likesInfoMap(post.reactions, userId);
+                const newestLikesMapped = await this.newestLikesMap([...post.reactions]);
+                return {
+                    id: post.id,
+                    title: post.title,
+                    shortDescription: post.shortDescription,
+                    content: post.content,
+                    blogId: post.blogId,
+                    blogName: post.blogName,
+                    createdAt: post.createdAt,
+                    extendedLikesInfo: {
+                        likesCount: likesInfoMapped.likesCount,
+                        dislikesCount: likesInfoMapped.dislikesCount,
+                        myStatus: likesInfoMapped.myStatus,
+                        newestLikes: newestLikesMapped
+                    }
+                }
             }))
-        }
+        };
     },
     async findPostById(id: string, userId?: string) {
         const post = await PostModel.findOne({id: id}).populate('reactions').select({_id: 0, __v: 0}).exec();
         if(!post)
             return null;
-        const newestLikes = await ReactionModel.find({entityId: id, reaction: 'Like'})
-            .sort({createdAt: "desc"})
-            .limit(3).select({_id: 0, __v: 0}).exec();
-        const likesInfo = await this.likesInfoMap(post.reactions, userId);
+        const likesInfoMapped = await this.likesInfoMap(post.reactions, userId);
+        const newestLikesMapped = await this.newestLikesMap([...post.reactions]);
         return {
             id: post.id,
             title: post.title,
@@ -97,14 +97,10 @@ export const queryRepository = {
             blogName: post.blogName,
             createdAt: post.createdAt,
             extendedLikesInfo: {
-                likesCount: likesInfo.likesCount,
-                dislikesCount: likesInfo.dislikesCount,
-                myStatus: likesInfo.myStatus,
-                newestLikes: newestLikes.map(like => ({
-                    addedAt: like.createdAt,
-                    userId: like.userId,
-                    login: like.login
-                }))
+                likesCount: likesInfoMapped.likesCount,
+                dislikesCount: likesInfoMapped.dislikesCount,
+                myStatus: likesInfoMapped.myStatus,
+                newestLikes: newestLikesMapped
             }
         };
     },
@@ -159,14 +155,14 @@ export const queryRepository = {
         const comment = await CommentModel.findOne({id: id}).populate('reactions').select({_id: 0, __v: 0}).exec();
         if(!comment)
             return null;
-        const likesInfo = await this.likesInfoMap(comment.reactions, userId);
+        const likesInfoMapped = await this.likesInfoMap(comment.reactions, userId);
         return {
             id: comment.id,
             content: comment.content,
             userId: comment.userId,
             userLogin: comment.userLogin,
             createdAt: comment.createdAt,
-            likesInfo: likesInfo
+            likesInfo: likesInfoMapped
         }
     },
     async getCommentsWithQueryParam(searchParams: QueryParamsType, filter?: FilterQueryType, userId?: string) {
@@ -179,24 +175,23 @@ export const queryRepository = {
             .sort([[searchParams.sortBy, searchParams.sortDirection]])
             .select({_id: 0, __v: 0}).exec();
         const commentsCount = await CommentModel.countDocuments(filter).exec();
-
         return {
             pagesCount: Math.ceil(commentsCount / searchParams.pageSize),
             page: searchParams.pageNumber,
             pageSize: searchParams.pageSize,
             totalCount: commentsCount,
             items: await Promise.all(comments.map(async comment => {
-                const likesInfo = await this.likesInfoMap(comment.reactions, userId);
+                const likesInfoMapped = await this.likesInfoMap(comment.reactions, userId);
                 return {
                     id: comment.id,
                     content: comment.content,
                     userId: comment.userId,
                     userLogin: comment.userLogin,
                     createdAt: comment.createdAt,
-                    likesInfo: likesInfo
+                    likesInfo: likesInfoMapped
                 }
             }))
-        }
+        };
     },
     async likesInfoMap(reactions: ReactionsCollectionType[], userId?: string) {
         let myStatus: string = 'None';
@@ -220,5 +215,22 @@ export const queryRepository = {
             dislikesCount: dislikesCount,
             myStatus: myStatus
         }
+    },
+    async newestLikesMap(reactions: ReactionsCollectionType[]) {
+        //фильтруем копию массива, оставляем только лайки, потом сортируем лайки по дате
+        const newestLikes = reactions.filter(like => like.reaction === "Like")
+            .sort(function(a, b) {
+                if (a.createdAt > b.createdAt) {
+                    return -1; }
+                if (a.createdAt < b.createdAt) {
+                    return 1; }
+                return 0;
+            });
+        newestLikes.splice(3); //берем первые три лайка
+        return newestLikes.map(like => ({
+            addedAt: like.createdAt,
+            userId: like.userId,
+            login: like.login
+        }))
     }
 };
