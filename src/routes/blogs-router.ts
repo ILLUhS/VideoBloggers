@@ -12,6 +12,7 @@ import {
 } from "../middlewares/input-validation";
 import {queryRepository} from "../repositories/query-repository";
 import {blogsService} from "../services/blogs-service";
+import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
 export const blogsRouter = Router({});
 
 blogsRouter.get('/', queryParamsValidation, async (req: Request, res: Response) => {
@@ -24,10 +25,19 @@ blogsRouter.get('/:id', async (req, res) => {
         else
             return res.sendStatus(404);
 });
-blogsRouter.get('/:id/posts', blogIdIsExist, queryParamsValidation, async (req: Request, res: Response) => {
-        const foundPosts = await queryRepository.getPotsWithQueryParam(
-            req.searchParams!, {blogId: String(req.params.id)});
-        return res.status(200).json(foundPosts);
+blogsRouter.get('/:id/posts', blogIdIsExist, queryParamsValidation, checkAuthorizationHeaders,
+    async (req: Request, res: Response) => {
+        let foundPosts;
+        if(req.user)
+            foundPosts = await queryRepository.getPotsWithQueryParam(req.searchParams!,
+                {blogId: String(req.params.id)}, req.user.id);
+        else
+            foundPosts = await queryRepository.getPotsWithQueryParam(req.searchParams!,
+                {blogId: String(req.params.id)});
+        if(foundPosts)
+            return res.status(200).json(foundPosts);
+        else
+            return res.sendStatus(404);
 });
 blogsRouter.delete('/:id', authorizationBasicGuard, async (req, res) => {
         const deletedBlog = await blogsService.deleteBlogByTd(String(req.params.id));
