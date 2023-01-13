@@ -194,17 +194,15 @@ export const queryRepository = {
         };
     },
     async likesInfoMap(reactions: ReactionsCollectionType[], userId?: string) {
+        if(!userId)
+            userId = '';
         let myStatus: string = 'None';
         let likesCount: number = 0;
         let dislikesCount: number = 0;
         if(reactions.length > 0) {
-            if (userId) {
-                reactions.forEach(r => {
-                    if (r.userId === userId)
-                        myStatus = r.reaction;
-                });
-            }
             reactions.forEach(r => {
+                if (r.userId === userId)
+                    myStatus = r.reaction;
                 if (r.reaction === "Like")
                     likesCount++;
                 else dislikesCount++;
