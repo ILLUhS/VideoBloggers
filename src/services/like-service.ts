@@ -1,7 +1,7 @@
 import {reactionsRepository} from "../repositories/reactions-repository";
 import { v4 as uuidv4 } from 'uuid';
 import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
-import {usersService} from "./users-service";
+import {usersService} from "../composition-root";
 
 export const likeService = {
     async setLikeDislike(status: string, entityId: string, userId: string) { //entityId - id документа, которому принадлежит лайк (commentId or postId)

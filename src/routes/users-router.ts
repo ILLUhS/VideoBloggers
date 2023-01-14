@@ -1,13 +1,13 @@
 import {Request, Response, Router} from "express";
 import {authorizationBasicGuard} from "../middlewares/authorization-basic-guard";
 import {queryRepository} from "../repositories/query-repository";
+import {usersService} from "../composition-root";
 import {
     emailValidation,
     errorsValidation,
     loginValidation,
     passwordValidation, queryParamsValidation
 } from "../middlewares/input-validation";
-import {usersService} from "../services/users-service";
 
 export const usersRouter = Router({});
 usersRouter.get('/', authorizationBasicGuard, queryParamsValidation,
