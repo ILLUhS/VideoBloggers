@@ -1,8 +1,10 @@
 import {UserCreateType} from "../types/create-model-types/user-create-type";
-import {emailAdapter} from "../adapters/email-adapter";
+import {EmailAdapter} from "../adapters/email-adapter";
 import {Buffer} from 'buffer';
 
-export const emailManager = {
+export class EmailManager {
+    constructor(protected emailAdapter: EmailAdapter) {
+    }
     async sendEmailConfirmationMessage(user: UserCreateType) {
         const email = user.accountData.email;
         const subject = 'Confirm your registration';
@@ -12,8 +14,8 @@ export const emailManager = {
         <p>To finish registration please follow the link below:
             <a href=${link}>complete registration</a>
         </p>`
-        await emailAdapter.sendEmail(email, subject, message);
-    },
+        await this.emailAdapter.sendEmail(email, subject, message);
+    };
     async sendPassRecoveryMessage(email: string, recoveryCode: string) {
         const subject = 'Confirm your registration';
         const code = Buffer.from(recoveryCode).toString('base64');
@@ -22,6 +24,6 @@ export const emailManager = {
         <p>To finish recovery please follow the link below:
             <a href=${link}>recovery password</a>
         </p>`
-        await emailAdapter.sendEmail(email, subject, message);
-    }
+        await this.emailAdapter.sendEmail(email, subject, message);
+    };
 }

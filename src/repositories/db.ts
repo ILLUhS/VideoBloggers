@@ -7,7 +7,7 @@ import {ReactionsCollectionType} from "../types/collection-types/reactions-colle
 import mongoose from "mongoose";
 import {settings} from "../config/settings";
 
-const mongoURI = settings.MONGO_URL
+const mongoURI = settings.MONGO_URL;
 if(!mongoURI)
     throw Error('Bad URL');
 const { Schema } = mongoose;

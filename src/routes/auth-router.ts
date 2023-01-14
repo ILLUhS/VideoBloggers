@@ -6,10 +6,9 @@ import {
 } from "../middlewares/input-validation";
 import {jwtService} from "../application/jwt-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
-import {authService} from "../services/auth-service";
 import {checkRefreshToken} from "../middlewares/check-refresh-token";
 import {requestLimit} from "../middlewares/request-limit";
-import {usersService} from "../services/users-service";
+import {authService, usersService} from "../composition-root";
 
 export const authRouter = Router({});
 
