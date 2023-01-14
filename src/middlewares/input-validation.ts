@@ -1,11 +1,9 @@
 import {NextFunction, Request, Response} from "express";
 import {body, validationResult, CustomValidator, oneOf} from 'express-validator';
-import {blogsService} from "../services/blogs-service";
-import {postsService} from "../services/posts-service";
 import {QueryParamsType} from "../types/query-params-type";
 import {ErrorsType} from "../types/errors-type";
 import {SortOrder} from "mongoose";
-import {authService, usersService} from "../composition-root";
+import {authService, blogsService, postsService, usersService} from "../composition-root";
 
 enum LIKE_STATUS {
     "None",

@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {sessionsService} from "../services/sessions-service";
+import {sessionsService} from "../composition-root";
 
 export const checkOwnerDevice = async (req: Request, res: Response, next: NextFunction) => {
     const isExist = await sessionsService.getByDeviceId(req.params.id);

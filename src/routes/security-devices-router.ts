@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express";
 import {checkRefreshToken} from "../middlewares/check-refresh-token";
-import {sessionsService} from "../services/sessions-service";
 import {checkOwnerDevice} from "../middlewares/check-owner-device";
+import {sessionsService} from "../composition-root";
 
 export const securityDevicesRouter = Router({});
 

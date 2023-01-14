@@ -1,10 +1,14 @@
-import {blogsRepository} from "../repositories/blogs-repository";
-import {postsService} from "./posts-service";
 import { v4 as uuidv4 } from 'uuid';
-export const blogsService = {       //объект с методами управления данными
+import {BlogsRepository} from "../repositories/blogs-repository";
+import {PostsService} from "./posts-service";
+
+export class BlogsService {       //объект с методами управления данными
+    constructor(protected blogsRepository: BlogsRepository,
+                protected postsService: PostsService) {
+    }
     async findBlogById(id: string) {
-        return await blogsRepository.findById(id);
-    },
+        return await this.blogsRepository.findById(id);
+    };
     async createBlog(name: string, description: string, websiteUrl: string) {
         const newBlog = {
             id: uuidv4(),
@@ -13,12 +17,12 @@ export const blogsService = {       //объект с методами упра�
             websiteUrl: websiteUrl,
             createdAt: new Date().toISOString()
         };
-        const result = await blogsRepository.create(newBlog);
+        const result = await this.blogsRepository.create(newBlog);
         return result ? newBlog.id : null;
-    },
+    };
     async createPostByBlogId(title: string, shortDescription: string, content: string, blogId: string) {
-        return await postsService.createPost(title, shortDescription,content, blogId);
-    },
+        return await this.postsService.createPost(title, shortDescription,content, blogId);
+    };
     async updateBlog(id: string, name: string, description: string, websiteUrl: string) {
         const updateBlog = {
             id: id,
@@ -26,12 +30,12 @@ export const blogsService = {       //объект с методами упра�
             description: description,
             websiteUrl: websiteUrl
         }
-        return blogsRepository.update(updateBlog);
-    },
+        return this.blogsRepository.update(updateBlog);
+    };
     async deleteBlogByTd(id: string) {
-        return await blogsRepository.deleteByTd(id);
-    },
+        return await this.blogsRepository.deleteByTd(id);
+    };
     async deleteAllBlogs() {
-        return await blogsRepository.deleteAll()
-    }
-};
+        return await this.blogsRepository.deleteAll()
+    };
+}

@@ -11,8 +11,9 @@ import {
     websiteUrlBlogValidation
 } from "../middlewares/input-validation";
 import {queryRepository} from "../repositories/query-repository";
-import {blogsService} from "../services/blogs-service";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
+import {blogsService} from "../composition-root";
+
 export const blogsRouter = Router({});
 
 blogsRouter.get('/', queryParamsValidation, async (req: Request, res: Response) => {

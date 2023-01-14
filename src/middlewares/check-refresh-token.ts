@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {jwtService} from "../application/jwt-service";
+import {jwtService} from "../composition-root";
 
 export const checkRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     if(!req.cookies.refreshToken)

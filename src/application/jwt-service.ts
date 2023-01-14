@@ -1,13 +1,14 @@
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import {settings} from "../config/settings";
-import {refreshTokensMetaRepository} from "../repositories/refresh-tokens-meta-repository";
 import {RefreshTokenPayloadType} from "../types/refresh-token-payload-type";
+import {RefreshTokensMetaRepository} from "../repositories/refresh-tokens-meta-repository";
 
-export const jwtService = {
+export class JwtService {
+    constructor(protected refreshTokensMetaRepository: RefreshTokensMetaRepository) { };
     async createAccessJWT(userId: string) {
         return jwt.sign({userId: userId}, settings.JWT_SECRET!, {expiresIn: '600s'});
-    },
+    };
     async getUserIdByToken(token: string) {
         try {
             const payload: any = jwt.verify(token, settings.JWT_SECRET!);
@@ -17,11 +18,11 @@ export const jwtService = {
             console.log(error);
             return null;
         }
-    },
+    };
     async getPayloadByRefreshToken(token: string): Promise<RefreshTokenPayloadType | null> {
         try {
             const payload: any = jwt.verify(token, settings.RefreshJWT_SECRET!);
-            const tokenIsValid = await refreshTokensMetaRepository.find(payload.iat, payload.deviceId, payload.userId);
+            const tokenIsValid = await this.refreshTokensMetaRepository.find(payload.iat, payload.deviceId, payload.userId);
             if(!tokenIsValid)
                 return null;
             return {
@@ -33,24 +34,24 @@ export const jwtService = {
             console.log(error);
             return null;
         }
-    },
+    };
     async createRefreshJWT(userId: string, deviceName: string, deviceIp: string) {
         const deviceId = uuidv4();
         const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20000s'});
         const payload = JSON.parse(Buffer.from(token.split('.')[1], "base64").toString("ascii"));
-        await refreshTokensMetaRepository.create(payload.iat, payload.exp, deviceId, deviceIp, deviceName, userId);
+        await this.refreshTokensMetaRepository.create(payload.iat, payload.exp, deviceId, deviceIp, deviceName, userId);
         return token;
-    },
+    };
     async reCreateRefreshJWT(userId: string, deviceId: string, deviceIp: string) {
         const token = jwt.sign({deviceId: deviceId, userId: userId}, settings.RefreshJWT_SECRET!, {expiresIn: '20000s'});
         const payload = JSON.parse(Buffer.from(token.split('.')[1], "base64").toString("ascii"));
-        await refreshTokensMetaRepository.update(payload.iat, payload.exp, deviceId, deviceIp, payload.userId);
+        await this.refreshTokensMetaRepository.update(payload.iat, payload.exp, deviceId, deviceIp, payload.userId);
         return token;
-    },
+    };
     async deleteOneTokensMeta(userId: string, deviceId: string) {
-        return await refreshTokensMetaRepository.deleteByUserIdAndDeviceId(userId, deviceId);
-    },
+        return await this.refreshTokensMetaRepository.deleteByUserIdAndDeviceId(userId, deviceId);
+    };
     async deleteAllTokensMeta() {
-        return refreshTokensMetaRepository.deleteAll();
-    }
+        return this.refreshTokensMetaRepository.deleteAll();
+    };
 }
