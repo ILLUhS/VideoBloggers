@@ -37,4 +37,7 @@ export class LikeService {
             return null;
         return foundLike.reaction;
     };
+    async deleteAllLikes() {
+        return await this.reactionsRepository.deleteAll();
+    }
 }

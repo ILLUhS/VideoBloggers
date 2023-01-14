@@ -22,4 +22,7 @@ export class ReactionsRepository {
     async delete(entityId: string, userId: string) {
         return (await ReactionModel.deleteOne({entityId: entityId, userId: userId}).exec()).deletedCount === 1;
     };
+    async deleteAll() {
+        return(await ReactionModel.deleteMany().exec()).acknowledged;
+    }
 }
