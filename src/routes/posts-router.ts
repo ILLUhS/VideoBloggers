@@ -5,10 +5,9 @@ import {
     contentPostValidation, errorsValidation, likeStatusValidation, postIdIsExist, queryParamsValidation,
     shortDescriptionPostValidation, titlePostValidation
 } from "../middlewares/input-validation";
-import {queryRepository} from "../repositories/query-repository";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {likeService, postsService} from "../composition-root";
+import {likeService, postsService, queryRepository} from "../composition-root";
 
 export const postsRouter = Router({});
 

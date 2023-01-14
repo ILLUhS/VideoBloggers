@@ -10,9 +10,8 @@ import {
     titlePostValidation,
     websiteUrlBlogValidation
 } from "../middlewares/input-validation";
-import {queryRepository} from "../repositories/query-repository";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {blogsService} from "../composition-root";
+import {blogsService, queryRepository} from "../composition-root";
 
 export const blogsRouter = Router({});
 

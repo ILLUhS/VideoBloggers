@@ -1,9 +1,8 @@
 import {Router, Request, Response} from "express";
-import {queryRepository} from "../repositories/query-repository";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {contentCommentValidation, errorsValidation, likeStatusValidation} from "../middlewares/input-validation";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {commentsService, likeService} from "../composition-root";
+import {commentsService, likeService, queryRepository} from "../composition-root";
 
 export const commentsRouter = Router({})
 

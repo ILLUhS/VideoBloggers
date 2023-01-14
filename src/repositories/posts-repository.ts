@@ -1,14 +1,15 @@
-import {PostModel} from "./db";
+import {DataBase} from "./dataBase";
 import {PostCreateType} from "../types/create-model-types/post-create-type";
 import {PostUpdateType} from "../types/update-model-types/post-update-type";
 
 export class PostsRepository {       //объект с методами управления данными
+    constructor(protected db: DataBase) { };
     async deleteByTd(id: string): Promise<boolean> {
-        return (await PostModel.deleteOne({id: id}).exec()).deletedCount === 1;
+        return (await this.db.PostModel.deleteOne({id: id}).exec()).deletedCount === 1;
     };
     async create(newPost: PostCreateType): Promise<boolean> {
         try {
-            await PostModel.create(newPost);
+            await this.db.PostModel.create(newPost);
             return true;
         }
         catch (e) {
@@ -17,7 +18,7 @@ export class PostsRepository {       //объект с методами упра
         }
     };
     async update(updatePost: PostUpdateType): Promise<boolean> {
-        return (await PostModel.updateOne({id: updatePost.id}, {
+        return (await this.db.PostModel.updateOne({id: updatePost.id}, {
             title: updatePost.title,
             shortDescription: updatePost.shortDescription,
             content: updatePost.content,
@@ -26,10 +27,10 @@ export class PostsRepository {       //объект с методами упра
         }).exec()).matchedCount === 1;
     };
     async deleteAll(): Promise<boolean> {
-        return (await PostModel.deleteMany().exec()).acknowledged;
+        return (await this.db.PostModel.deleteMany().exec()).acknowledged;
     };
     async findById(id: string) {
-        return await PostModel.findOne({id: id}).select({
+        return await this.db.PostModel.findOne({id: id}).select({
             _id: 0,
             id: 1,
             title: 1,

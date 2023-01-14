@@ -1,8 +1,9 @@
-import {RefreshTokensMetaModel} from "./db";
+import {DataBase} from "./dataBase";
 
 export class RefreshTokensMetaRepository {
+    constructor(protected db: DataBase) { };
     async find(issuedAt: number, deviceId: string, userId: string): Promise<boolean> {
-        const result = await RefreshTokensMetaModel.findOne({
+        const result = await this.db.RefreshTokensMetaModel.findOne({
             issuedAt: issuedAt,
             deviceId: deviceId,
             userId: userId
@@ -13,7 +14,7 @@ export class RefreshTokensMetaRepository {
     async create(issuedAt: number, expirationAt: number, deviceId: string,
                  deviceIp: string, deviceName: string, userId: string): Promise<boolean> {
         try {
-            await RefreshTokensMetaModel.create({
+            await this.db.RefreshTokensMetaModel.create({
                 issuedAt: issuedAt,
                 expirationAt: expirationAt,
                 deviceId: deviceId,
@@ -30,7 +31,7 @@ export class RefreshTokensMetaRepository {
     };
     async update(issuedAt: number, expirationAt: number, deviceId: string,
                  deviceIp: string, userId: string): Promise<boolean> {
-        return (await RefreshTokensMetaModel.updateOne({deviceId: deviceId, userId: userId},
+        return (await this.db.RefreshTokensMetaModel.updateOne({deviceId: deviceId, userId: userId},
             {
                 issuedAt: issuedAt,
                 expirationAt: expirationAt,
@@ -38,28 +39,28 @@ export class RefreshTokensMetaRepository {
             }).exec()).matchedCount === 1;
     };
     async deleteByUserIdAndDeviceId(userId: string, deviceId: string): Promise<boolean> {
-        return (await RefreshTokensMetaModel.deleteOne({
+        return (await this.db.RefreshTokensMetaModel.deleteOne({
             userId: userId,
             deviceId: deviceId
         }).exec()).deletedCount === 1;
     };
     async deleteById(userId: string): Promise<boolean> {
-        return (await RefreshTokensMetaModel.deleteMany({userId: userId}).exec()).acknowledged;
+        return (await this.db.RefreshTokensMetaModel.deleteMany({userId: userId}).exec()).acknowledged;
     };
     async deleteAll(): Promise<boolean> {
-        return (await RefreshTokensMetaModel.deleteMany().exec()).acknowledged;
+        return (await this.db.RefreshTokensMetaModel.deleteMany().exec()).acknowledged;
     };
     async findByUserId(userId: string) {
-        return await RefreshTokensMetaModel.find({userId: userId}).select({_id: 0}).exec();
+        return await this.db.RefreshTokensMetaModel.find({userId: userId}).select({_id: 0}).exec();
     };
     async findByDeviceId(deviceId: string) {
-        return await RefreshTokensMetaModel.findOne({deviceId: deviceId}).select({_id: 0}).exec();
+        return await this.db.RefreshTokensMetaModel.findOne({deviceId: deviceId}).select({_id: 0}).exec();
     };
     async deleteAllExceptCurrent(userId: string, deviceId: string): Promise<boolean> {
-        return (await RefreshTokensMetaModel.deleteMany({userId: userId})
+        return (await this.db.RefreshTokensMetaModel.deleteMany({userId: userId})
             .where('deviceId').ne(deviceId).exec()).acknowledged;
     };
     async deleteByDeviceId(deviceId: string): Promise<boolean> {
-        return (await RefreshTokensMetaModel.deleteOne({deviceId: deviceId}).exec()).deletedCount === 1;
+        return (await this.db.RefreshTokensMetaModel.deleteOne({deviceId: deviceId}).exec()).deletedCount === 1;
     };
 }

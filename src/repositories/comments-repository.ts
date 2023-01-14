@@ -1,11 +1,12 @@
 import {CommentCreateType} from "../types/create-model-types/comment-create-type";
 import {CommentUpdateType} from "../types/update-model-types/comment-update-type";
-import {CommentModel} from "./db";
+import {DataBase} from "./dataBase";
 
 export class CommentsRepository {
+    constructor(protected db: DataBase) { };
     async create(newComment: CommentCreateType) {
         try {
-            await CommentModel.create(newComment);
+            await this.db.CommentModel.create(newComment);
             return true;
         }
         catch (e) {
@@ -14,13 +15,13 @@ export class CommentsRepository {
         }
     };
     async deleteAll(): Promise<boolean> {
-        return (await CommentModel.deleteMany().exec()).acknowledged;
+        return (await this.db.CommentModel.deleteMany().exec()).acknowledged;
     };
     async deleteByTd(id: string): Promise<boolean> {
-        return (await CommentModel.deleteOne({id: id}).exec()).deletedCount === 1;
+        return (await this.db.CommentModel.deleteOne({id: id}).exec()).deletedCount === 1;
     };
     async update(updateComment: CommentUpdateType): Promise<boolean> {
-        return (await CommentModel.updateOne({id: updateComment.id},
+        return (await this.db.CommentModel.updateOne({id: updateComment.id},
             {content: updateComment.content}).exec()).matchedCount === 1;
     };
 }
