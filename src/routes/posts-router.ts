@@ -9,7 +9,7 @@ import {queryRepository} from "../repositories/query-repository";
 import {postsService} from "../services/posts-service";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {likeService} from "../services/like-service";
+import {likeService} from "../composition-root";
 
 export const postsRouter = Router({});
 

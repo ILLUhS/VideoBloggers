@@ -1,18 +1,19 @@
-import {reactionsRepository} from "../repositories/reactions-repository";
 import { v4 as uuidv4 } from 'uuid';
 import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
 import {usersService} from "../composition-root";
+import {ReactionsRepository} from "../repositories/reactions-repository";
 
-export const likeService = {
+export class LikeService {
+    constructor(protected reactionsRepository: ReactionsRepository) { };
     async setLikeDislike(status: string, entityId: string, userId: string) { //entityId - id документа, которому принадлежит лайк (commentId or postId)
         const result = await this.checkLike(entityId, userId);
         if(result) {
             if(status === 'None')
-                return await reactionsRepository.delete(entityId, userId);
+                return await this.reactionsRepository.delete(entityId, userId);
             else if (result === status)
                 return true;
             else {
-                return await reactionsRepository.update(status, entityId, userId);
+                return await this.reactionsRepository.update(status, entityId, userId);
             }
         }
         if(status === 'None')
@@ -28,12 +29,12 @@ export const likeService = {
             reaction: status,
             createdAt: new Date()
         };
-        return await reactionsRepository.create(newLike);
-    },
+        return await this.reactionsRepository.create(newLike);
+    };
     async checkLike(entityId: string, userId: string): Promise<string | null> {
-        const foundLike = await reactionsRepository.find(entityId, userId);
+        const foundLike = await this.reactionsRepository.find(entityId, userId);
         if(!foundLike)
             return null;
         return foundLike.reaction;
-    }
+    };
 }
