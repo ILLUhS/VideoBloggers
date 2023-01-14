@@ -1,6 +1,5 @@
 import {Router} from "express";
-import {commentsService} from "../services/comments-service";
-import {blogsService, jwtService, postsService, usersService} from "../composition-root";
+import {blogsService, commentsService, jwtService, postsService, usersService} from "../composition-root";
 
 export const testingAllDataRouter = Router({});
 

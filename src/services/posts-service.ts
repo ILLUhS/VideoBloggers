@@ -1,10 +1,11 @@
 import {v4 as uuidv4} from "uuid";
-import {commentsService} from "./comments-service";
+import {CommentsService} from "./comments-service";
 import {PostsRepository} from "../repositories/posts-repository";
 import {queryRepository} from "../repositories/query-repository";
 
 export class PostsService {
-    constructor(protected postsRepository: PostsRepository) { };
+    constructor(protected postsRepository: PostsRepository,
+                protected commentsService: CommentsService) { };
     async findPostById(id: string) {
         return await this.postsRepository.findById(id);
     };
@@ -29,7 +30,7 @@ export class PostsService {
         return null;
     };
     async createCommentByPostId(content: string, userId: string, userLogin: string, postId: string) {
-        return await commentsService.createComment(content, userId, userLogin, postId);
+        return await this.commentsService.createComment(content, userId, userLogin, postId);
     };
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
         const foundBlog = await queryRepository.findBlogById(blogId);
