@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {inject, injectable} from "inversify";
+import {injectable} from "inversify";
 import {
     blogSchema,
     commentSchema,
@@ -11,7 +11,6 @@ import {
 
 @injectable()
 export class DataBase {
-
     public CommentModel = mongoose.model("comments", commentSchema);
     public UserModel = mongoose.model("users", userSchema);
     public RefreshTokensMetaModel = mongoose.model("refreshtokensmetas", refreshTokensMetaSchema);
@@ -19,15 +18,11 @@ export class DataBase {
     public PostModel = mongoose.model("posts", postSchema);
     public ReactionModel = mongoose.model("reactions", reactionSchema);
 
-    constructor(@inject("mongoURI") protected mongoURI: string) { };
-
-    async runDb(mongoURITest?: string) {
-        if(mongoURITest)
-            this.mongoURI = mongoURITest;
-        if (!this.mongoURI)
+    async runDb(mongoURI: string) {
+        if (!mongoURI)
             throw Error('Bad URL');
         try {
-            await mongoose.connect(this.mongoURI);
+            await mongoose.connect(mongoURI);
         } catch {
             await mongoose.connection.close();
         }
