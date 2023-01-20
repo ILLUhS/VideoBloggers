@@ -2,9 +2,11 @@ import {DataBase} from "./dataBase";
 import {BlogUpdateType} from "../types/update-model-types/blog-update-type";
 import {BlogCreateType} from "../types/create-model-types/blog-create-type";
 import {BlogsViewType} from "../types/view-model-types/blogs-view-type";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsRepository { //объект с методами управления данными
-    constructor(protected db: DataBase) { };
+    constructor(@inject(DataBase) protected db: DataBase) { };
     async findById(id: string): Promise<BlogsViewType | null> {
         return await this.db.BlogModel.findOne({id: id}).select({
             _id: 0,

@@ -1,10 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
-import {usersService} from "../composition-root";
+import {usersService} from "../dependencies/composition-root";
 import {ReactionsRepository} from "../repositories/reactions-repository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class LikeService {
-    constructor(protected reactionsRepository: ReactionsRepository) { };
+    constructor(@inject(ReactionsRepository) protected reactionsRepository: ReactionsRepository) { };
     async setLikeDislike(status: string, entityId: string, userId: string) { //entityId - id документа, которому принадлежит лайк (commentId or postId)
         const result = await this.checkLike(entityId, userId);
         if(result) {

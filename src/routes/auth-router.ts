@@ -7,7 +7,7 @@ import {
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {checkRefreshToken} from "../middlewares/check-refresh-token";
 import {requestLimit} from "../middlewares/request-limit";
-import {authService, jwtService, usersService} from "../composition-root";
+import {authService, jwtService, usersService} from "../dependencies/composition-root";
 
 export const authRouter = Router({});
 

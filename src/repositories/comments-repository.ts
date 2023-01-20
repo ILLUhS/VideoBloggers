@@ -1,9 +1,11 @@
 import {CommentCreateType} from "../types/create-model-types/comment-create-type";
 import {CommentUpdateType} from "../types/update-model-types/comment-update-type";
 import {DataBase} from "./dataBase";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsRepository {
-    constructor(protected db: DataBase) { };
+    constructor(@inject(DataBase) protected db: DataBase) { };
     async create(newComment: CommentCreateType) {
         try {
             await this.db.CommentModel.create(newComment);

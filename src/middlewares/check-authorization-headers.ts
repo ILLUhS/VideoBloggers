@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {jwtService, usersService} from "../composition-root";
+import {jwtService, usersService} from "../dependencies/composition-root";
 
 export const checkAuthorizationHeaders = async (req: Request, res: Response, next: NextFunction) => {
     if(!req.headers.authorization)

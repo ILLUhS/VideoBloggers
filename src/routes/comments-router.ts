@@ -2,7 +2,7 @@ import {Router, Request, Response} from "express";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {contentCommentValidation, errorsValidation, likeStatusValidation} from "../middlewares/input-validation";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {commentsService, likeService, queryRepository} from "../composition-root";
+import {commentsService, likeService, queryRepository} from "../dependencies/composition-root";
 
 export const commentsRouter = Router({})
 

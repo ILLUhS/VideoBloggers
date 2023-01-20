@@ -1,7 +1,9 @@
 import {DataBase} from "./dataBase";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class RefreshTokensMetaRepository {
-    constructor(protected db: DataBase) { };
+    constructor(@inject(DataBase) protected db: DataBase) { };
     async find(issuedAt: number, deviceId: string, userId: string): Promise<boolean> {
         const result = await this.db.RefreshTokensMetaModel.findOne({
             issuedAt: issuedAt,

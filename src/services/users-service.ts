@@ -3,8 +3,13 @@ import {v4 as uuidv4} from "uuid";
 import {UsersRepository} from "../repositories/users-repository";
 import add from "date-fns/add";
 import {RefreshTokensMetaRepository} from "../repositories/refresh-tokens-meta-repository";
+import {inject, injectable} from "inversify";
+
+@injectable()
 export class UsersService {
-    constructor(protected usersRepository: UsersRepository,
+    constructor(@inject(UsersRepository)
+                protected usersRepository: UsersRepository,
+                @inject(RefreshTokensMetaRepository)
                 protected refreshTokensMetaRepository: RefreshTokensMetaRepository) { };
     async createUser(login: string, password: string, email: string) {
         const passwordSalt = await bcrypt.genSalt();

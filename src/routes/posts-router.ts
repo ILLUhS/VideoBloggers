@@ -7,7 +7,7 @@ import {
 } from "../middlewares/input-validation";
 import {authorizationBearerGuard} from "../middlewares/authorization-bearer-guard";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {likeService, postsService, queryRepository} from "../composition-root";
+import {likeService, postsService, queryRepository} from "../dependencies/composition-root";
 
 export const postsRouter = Router({});
 

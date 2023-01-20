@@ -11,7 +11,7 @@ import {
     websiteUrlBlogValidation
 } from "../middlewares/input-validation";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {blogsService, queryRepository} from "../composition-root";
+import {blogsService, queryRepository} from "../dependencies/composition-root";
 
 export const blogsRouter = Router({});
 

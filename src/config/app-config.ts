@@ -5,10 +5,10 @@ import {postsRouter} from "../routes/posts-router";
 import {usersRouter} from "../routes/users-router";
 import {authRouter} from "../routes/auth-router";
 import {commentsRouter} from "../routes/comments-router";
-import {settings} from "./settings";
+import {settingsEnv} from "./settings-env";
 import cookieParser from "cookie-parser";
 import {securityDevicesRouter} from "../routes/security-devices-router";
-import {db} from "../composition-root";
+
 export const app = express();
 
 const jsonBody = express.json();
@@ -24,11 +24,11 @@ app.use('/auth', authRouter);
 app.use('/comments', commentsRouter);
 app.use('/security/devices', securityDevicesRouter);
 
-const port = settings.PORT;
+export const port = settingsEnv.PORT;
 
-export const startApp = async (): Promise<void> => {
+/*export const startApp = async (): Promise<void> => {
     await db.runDb();
     app.listen(port, () => {
         console.log(`app listening on port ${port}`)
     });
-}
+}*/

@@ -5,9 +5,11 @@ import {CommentsViewType} from "../types/view-model-types/comments-view-type";
 import {QueryParamsType} from "../types/query-params-type";
 import {FilterQueryType} from "../types/filter-query-type";
 import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class QueryRepository {
-    constructor(protected db: DataBase) { };
+    constructor(@inject(DataBase) protected db: DataBase) { };
     async getBlogsWithQueryParam(searchParams: QueryParamsType) {
         const blogs = await this.db.BlogModel.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}})
             .skip((searchParams.pageNumber - 1) * searchParams.pageSize,)

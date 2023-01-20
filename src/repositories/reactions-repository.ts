@@ -1,8 +1,10 @@
 import {DataBase} from "./dataBase";
 import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class ReactionsRepository {
-    constructor(protected db: DataBase) { };
+    constructor(@inject(DataBase) protected db: DataBase) { };
     async create(newLike: ReactionsCollectionType) {
         try {
             await this.db.ReactionModel.create(newLike);

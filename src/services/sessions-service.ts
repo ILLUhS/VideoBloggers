@@ -1,8 +1,10 @@
 import {RefreshTokensMetaRepository} from "../repositories/refresh-tokens-meta-repository";
+import {inject, injectable} from "inversify";
 
-
+@injectable()
 export class SessionsService {
-    constructor(protected refreshTokensMetaRepository: RefreshTokensMetaRepository) { };
+    constructor(@inject(RefreshTokensMetaRepository)
+                protected refreshTokensMetaRepository: RefreshTokensMetaRepository) { };
     async getAllByUserId(userId: string) {
         const sessions = await this.refreshTokensMetaRepository.findByUserId(userId);
         return sessions.map(s => ({

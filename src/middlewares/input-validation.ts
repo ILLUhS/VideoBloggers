@@ -3,7 +3,7 @@ import {body, validationResult, CustomValidator, oneOf} from 'express-validator'
 import {QueryParamsType} from "../types/query-params-type";
 import {ErrorsType} from "../types/errors-type";
 import {SortOrder} from "mongoose";
-import {authService, blogsService, postsService, usersService} from "../composition-root";
+import {authService, blogsService, postsService, usersService} from "../dependencies/composition-root";
 
 enum LIKE_STATUS {
     "None",

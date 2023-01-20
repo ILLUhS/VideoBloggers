@@ -2,11 +2,13 @@ import {v4 as uuidv4} from "uuid";
 import {CommentsService} from "./comments-service";
 import {PostsRepository} from "../repositories/posts-repository";
 import {QueryRepository} from "../repositories/query-repository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsService {
-    constructor(protected postsRepository: PostsRepository,
-                protected commentsService: CommentsService,
-                protected queryRepository: QueryRepository) { };
+    constructor(@inject(PostsRepository) protected postsRepository: PostsRepository,
+                @inject(CommentsService)protected commentsService: CommentsService,
+                @inject(QueryRepository)protected queryRepository: QueryRepository) { };
     async findPostById(id: string) {
         return await this.postsRepository.findById(id);
     };

@@ -3,9 +3,12 @@ import {v4 as uuidv4} from "uuid";
 import add from "date-fns/add";
 import {UsersRepository} from "../repositories/users-repository";
 import {EmailManager} from "../managers/email-manager";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthService {
-    constructor(protected usersRepository: UsersRepository, protected emailManager: EmailManager) { };
+    constructor(@inject(UsersRepository) protected usersRepository: UsersRepository,
+                @inject(EmailManager) protected emailManager: EmailManager) { };
     async createUser(login: string, password: string, email: string) {
         const passwordSalt = await bcrypt.genSalt();
         const passwordHash = await this._generateHash(password, passwordSalt);

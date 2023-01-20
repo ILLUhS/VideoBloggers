@@ -5,7 +5,9 @@ import {CommentsCollectionType} from "../types/collection-types/comments-collect
 import {RefreshTokensMetaType} from "../types/collection-types/refresh-tokens-meta-type";
 import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
 import mongoose from "mongoose";
+import {injectable} from "inversify";
 
+@injectable()
 export class DataBase {
     public CommentModel;
     public UserModel;
@@ -96,7 +98,9 @@ export class DataBase {
         this.ReactionModel = mongoose.model("reactions", reactionSchema);
     }
 
-    async runDb() {
+    async runDb(mongoURITest?: string) {
+        if(mongoURITest)
+            this.mongoURI = mongoURITest;
         if (!this.mongoURI)
             throw Error('Bad URL');
         try {

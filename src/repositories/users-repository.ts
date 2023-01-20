@@ -2,9 +2,11 @@ import {UserCreateType} from "../types/create-model-types/user-create-type";
 import {DataBase} from "./dataBase";
 import {UserViewType} from "../types/view-model-types/user-view-type";
 import {FilterOneFieldType} from "../types/filter-one-field-type";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UsersRepository {
-    constructor(protected db: DataBase) { };
+    constructor(@inject(DataBase) protected db: DataBase) { };
     async create(newUser: UserCreateType): Promise<boolean> {
         try {
             await this.db.UserModel.create(newUser);

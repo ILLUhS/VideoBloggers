@@ -1,7 +1,10 @@
 import { v4 as uuidv4 } from 'uuid'
 import {CommentsRepository} from "../repositories/comments-repository";
+import {inject, injectable} from "inversify";
+
+@injectable()
 export class CommentsService {
-    constructor(protected commentsRepository: CommentsRepository) { };
+    constructor(@inject(CommentsRepository) protected commentsRepository: CommentsRepository) { };
     async createComment(content: string, userId: string, userLogin: string, postId: string) {
         const newComment = {
             id: uuidv4(),

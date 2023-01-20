@@ -1,10 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import {BlogsRepository} from "../repositories/blogs-repository";
 import {PostsService} from "./posts-service";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsService {       //объект с методами управления данными
-    constructor(protected blogsRepository: BlogsRepository,
-                protected postsService: PostsService) {
+    constructor(@inject(BlogsRepository) protected blogsRepository: BlogsRepository,
+                @inject(PostsService) protected postsService: PostsService) {
     }
     async findBlogById(id: string) {
         return await this.blogsRepository.findById(id);

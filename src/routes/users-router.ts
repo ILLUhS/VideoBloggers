@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {authorizationBasicGuard} from "../middlewares/authorization-basic-guard";
-import {queryRepository, usersService} from "../composition-root";
+import {queryRepository, usersService} from "../dependencies/composition-root";
 import {
     emailValidation,
     errorsValidation,

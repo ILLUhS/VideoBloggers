@@ -1,10 +1,11 @@
 import {UserCreateType} from "../types/create-model-types/user-create-type";
 import {EmailAdapter} from "../adapters/email-adapter";
 import {Buffer} from 'buffer';
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class EmailManager {
-    constructor(protected emailAdapter: EmailAdapter) {
-    }
+    constructor(@inject(EmailAdapter) protected emailAdapter: EmailAdapter) { };
     async sendEmailConfirmationMessage(user: UserCreateType) {
         const email = user.accountData.email;
         const subject = 'Confirm your registration';

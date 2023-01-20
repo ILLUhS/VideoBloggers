@@ -1,9 +1,11 @@
 import {DataBase} from "./dataBase";
 import {PostCreateType} from "../types/create-model-types/post-create-type";
 import {PostUpdateType} from "../types/update-model-types/post-update-type";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsRepository {       //объект с методами управления данными
-    constructor(protected db: DataBase) { };
+    constructor(@inject(DataBase) protected db: DataBase) { };
     async deleteByTd(id: string): Promise<boolean> {
         return (await this.db.PostModel.deleteOne({id: id}).exec()).deletedCount === 1;
     };
