@@ -18,10 +18,8 @@ import {SessionsService} from "../services/sessions-service";
 import {CommentsService} from "../services/comments-service";
 import {PostsService} from "../services/posts-service";
 import {BlogsService} from "../services/blogs-service";
-import {settingsEnv} from "../config/settings-env";
 
 export const container = new Container();
-container.bind<string>("mongoURI").toConstantValue(settingsEnv.MONGO_URL);
 container.bind<DataBase>(DataBase).to(DataBase);
 container.bind<QueryRepository>(QueryRepository).to(QueryRepository);
 container.bind<UsersRepository>(UsersRepository).to(UsersRepository);
