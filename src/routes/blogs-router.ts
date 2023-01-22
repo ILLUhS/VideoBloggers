@@ -11,7 +11,7 @@ import {
     websiteUrlBlogValidation
 } from "../middlewares/input-validation";
 import {checkAuthorizationHeaders} from "../middlewares/check-authorization-headers";
-import {blogsService, queryRepository} from "../dependencies/composition-root";
+import {blogsService, postsService, queryRepository} from "../dependencies/composition-root";
 
 export const blogsRouter = Router({});
 
@@ -60,7 +60,7 @@ blogsRouter.post('/:id/posts', authorizationBasicGuard, blogIdIsExist,
     titlePostValidation, shortDescriptionPostValidation,
     contentPostValidation, errorsValidation,
     async (req: Request, res: Response) => {
-        const createdPostIdByBlogId = await blogsService.createPostByBlogId(
+        const createdPostIdByBlogId = await postsService.createPost(
             String(req.body.title),
             String(req.body.shortDescription),
             String(req.body.content),

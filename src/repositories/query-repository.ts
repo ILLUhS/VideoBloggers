@@ -6,12 +6,13 @@ import {QueryParamsType} from "../types/query-params-type";
 import {FilterQueryType} from "../types/filter-query-type";
 import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
 import {inject, injectable} from "inversify";
+import {BlogModel} from "../domain/mongoose-schemas/blog-schema";
 
 @injectable()
 export class QueryRepository {
     constructor(@inject(DataBase) protected db: DataBase) { };
     async getBlogsWithQueryParam(searchParams: QueryParamsType) {
-        const blogs = await this.db.BlogModel.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}})
+        const blogs = await BlogModel.find({name: { $regex:  searchParams.searchNameTerm, $options: 'i'}})
             .skip((searchParams.pageNumber - 1) * searchParams.pageSize,)
             .limit(searchParams.pageSize)
             .sort([[searchParams.sortBy, searchParams.sortDirection]])
@@ -23,7 +24,7 @@ export class QueryRepository {
                 websiteUrl: 1,
                 createdAt: 1
             }).exec();
-        const blogsCount = await this.db.BlogModel.countDocuments()
+        const blogsCount = await BlogModel.countDocuments()
             .where('name').regex(new RegExp(searchParams.searchNameTerm, 'i')).exec();
         return {
             pagesCount: Math.ceil(blogsCount / searchParams.pageSize),
@@ -40,7 +41,7 @@ export class QueryRepository {
         }
     };
     async findBlogById(id: string): Promise<BlogsViewType | null> {
-        return await this.db.BlogModel.findOne({id: id}).select({
+        return await BlogModel.findOne({id: id}).select({
             _id: 0,
             id: 1,
             name: 1,

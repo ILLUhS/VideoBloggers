@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-import {UsersCollectionType} from "../types/collection-types/users-collection-type";
-import {CommentsCollectionType} from "../types/collection-types/comments-collection-type";
-import {RefreshTokensMetaType} from "../types/collection-types/refresh-tokens-meta-type";
-import {BlogsCollectionType} from "../types/collection-types/blogs-collection-type";
-import {PostsCollectionType} from "../types/collection-types/posts-collection-type";
-import {ReactionsCollectionType} from "../types/collection-types/reactions-collection-type";
+import {UsersCollectionType} from "../../types/collection-types/users-collection-type";
+import {CommentsCollectionType} from "../../types/collection-types/comments-collection-type";
+import {RefreshTokensMetaType} from "../../types/collection-types/refresh-tokens-meta-type";
+import {PostsCollectionType} from "../../types/collection-types/posts-collection-type";
+import {ReactionsCollectionType} from "../../types/collection-types/reactions-collection-type";
 
 export const userSchema = new mongoose.Schema<UsersCollectionType>({
     id: String,
@@ -48,13 +47,6 @@ export const refreshTokensMetaSchema = new mongoose.Schema<RefreshTokensMetaType
     deviceIp: String,
     deviceName: String,
     userId: String
-});
-export const blogSchema = new mongoose.Schema<BlogsCollectionType>({
-    id: String,
-    name: String,
-    description: String,
-    websiteUrl: String,
-    createdAt: String
 });
 export const postSchema = (new mongoose.Schema<PostsCollectionType>({
     id: mongoose.Schema.Types.String,
