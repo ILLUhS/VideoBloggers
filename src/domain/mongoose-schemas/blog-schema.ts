@@ -22,6 +22,6 @@ blogSchema.method('updateProperties', function updateProperties(name: string, de
     this.name = name;
     this.description = description;
     this.websiteUrl = websiteUrl;
-})
+});
 
 export const BlogModel = mongoose.model<BlogsCollectionType, BlogModelType>("blogs", blogSchema);

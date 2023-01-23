@@ -1,10 +1,12 @@
 import {BlogsRepository} from "../repositories/blogs-repository";
 import {inject, injectable} from "inversify";
 import {BlogModel} from "../domain/mongoose-schemas/blog-schema";
+import {PostsRepository} from "../repositories/posts-repository";
 
 @injectable()
 export class BlogsService {       //объект с методами управления данными
-    constructor(@inject(BlogsRepository) protected blogsRepository: BlogsRepository) {
+    constructor(@inject(BlogsRepository) protected blogsRepository: BlogsRepository,
+                @inject(PostsRepository) protected postsRepository: PostsRepository) {
     }
     async findBlogById(id: string) {
         return await this.blogsRepository.findById(id);
@@ -19,6 +21,11 @@ export class BlogsService {       //объект с методами управ�
         if(!blog)
             return false;
         blog.updateProperties(name, description, websiteUrl);
+        const posts = await this.postsRepository.findPostsByBlogId(id);
+        posts!.forEach(p => {
+            p.updateBlogName(name);
+            this.postsRepository.save(p);
+        });
         return await this.blogsRepository.save(blog);
     };
     async deleteBlogByTd(id: string) {

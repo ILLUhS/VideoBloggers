@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import {UsersCollectionType} from "../../types/collection-types/users-collection-type";
 import {CommentsCollectionType} from "../../types/collection-types/comments-collection-type";
 import {RefreshTokensMetaType} from "../../types/collection-types/refresh-tokens-meta-type";
-import {PostsCollectionType} from "../../types/collection-types/posts-collection-type";
 import {ReactionsCollectionType} from "../../types/collection-types/reactions-collection-type";
+import {postSchema} from "./post-schema";
 
 export const userSchema = new mongoose.Schema<UsersCollectionType>({
     id: String,
@@ -48,15 +48,6 @@ export const refreshTokensMetaSchema = new mongoose.Schema<RefreshTokensMetaType
     deviceName: String,
     userId: String
 });
-export const postSchema = (new mongoose.Schema<PostsCollectionType>({
-    id: mongoose.Schema.Types.String,
-    title: String,
-    shortDescription: String,
-    content: String,
-    blogId: String,
-    blogName: String,
-    createdAt: String
-}, {toJSON: {virtuals: true}, toObject: {virtuals: true}}));
 postSchema.virtual('reactions', {
     ref: 'reactions',
     localField: 'id',

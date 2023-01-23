@@ -1,8 +1,8 @@
-import {v4 as uuidv4} from "uuid";
 import {CommentsService} from "./comments-service";
 import {PostsRepository} from "../repositories/posts-repository";
 import {QueryRepository} from "../repositories/query-repository";
 import {inject, injectable} from "inversify";
+import {PostModel} from "../domain/mongoose-schemas/post-schema";
 
 @injectable()
 export class PostsService {
@@ -17,38 +17,25 @@ export class PostsService {
     };
     async createPost(title: string, shortDescription: string, content: string, blogId: string) {
         const currentBlog = await this.queryRepository.findBlogById(blogId);
-        if(currentBlog) {
-            const newPost = {
-                id: uuidv4(),
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: currentBlog.name,
-                createdAt: new Date().toISOString()
-            };
-            const result = await this.postsRepository.create(newPost);
-            return result ? newPost.id : null;
-        }
-        return null;
+        if(!currentBlog)
+            return null;
+        const newPost = PostModel.makeInstance(title, shortDescription,
+            content, blogId, currentBlog.name);
+        const result = await this.postsRepository.save(newPost);
+        return result ? newPost.id : null;
     };
     async createCommentByPostId(content: string, userId: string, userLogin: string, postId: string) {
         return await this.commentsService.createComment(content, userId, userLogin, postId);
     };
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string) {
         const foundBlog = await this.queryRepository.findBlogById(blogId);
-        if(foundBlog) {
-            const updatePost = {
-                id: id,
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: foundBlog.name
-            };
-            return await this.postsRepository.update(updatePost);
-        }
-        return false;
+        if(!foundBlog)
+            return false;
+        const post = await this.postsRepository.findById(id);
+        if(!post)
+            return false;
+        post.updateProperties(title, shortDescription, content, blogId, foundBlog.name);
+        return await this.postsRepository.save(post);
     };
     async deleteAllPosts() {
         return await this.postsRepository.deleteAll();

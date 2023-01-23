@@ -16,7 +16,7 @@ export class BlogsRepository { //объект с методами управле
     async deleteAll(): Promise<boolean> {
         return (await BlogModel.deleteMany().exec()).acknowledged;
     };
-    async save(newBlog: HydratedDocument<BlogsCollectionType, BlogModelType>): Promise<boolean> {
-        return !!(await newBlog.save());
+    async save(blog: HydratedDocument<BlogsCollectionType, BlogModelType>): Promise<boolean> {
+        return !!(await blog.save());
     }
 }

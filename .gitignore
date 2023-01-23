@@ -1,8 +1,5 @@
 /node_modules
 /.idea
 /dist
-/__tests__/
 .env
-jest.config.js
-/jest-mongodb-config.js
-.env.test
+

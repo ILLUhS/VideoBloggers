@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 import {injectable} from "inversify";
 import {
     commentSchema,
-    postSchema,
     reactionSchema,
     refreshTokensMetaSchema,
     userSchema
 } from "../domain/mongoose-schemas/schemas";
+import {postSchema} from "../domain/mongoose-schemas/post-schema";
 
 @injectable()
 export class DataBase {
