@@ -11,6 +11,11 @@ export const postSchema = (new mongoose.Schema<PostsCollectionType, PostModelTyp
     blogName: String,
     createdAt: String
 }, {toJSON: {virtuals: true}, toObject: {virtuals: true}}));
+postSchema.virtual('reactions', {
+    ref: 'reactions',
+    localField: 'id',
+    foreignField: 'entityId'
+});
 postSchema.static('makeInstance',
     function makeInstance(title: string, shortDescription: string,
                           content: string, blogId: string, blogName: string) {

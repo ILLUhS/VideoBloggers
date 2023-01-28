@@ -3,7 +3,6 @@ import {UsersCollectionType} from "../../types/collection-types/users-collection
 import {CommentsCollectionType} from "../../types/collection-types/comments-collection-type";
 import {RefreshTokensMetaType} from "../../types/collection-types/refresh-tokens-meta-type";
 import {ReactionsCollectionType} from "../../types/collection-types/reactions-collection-type";
-import {postSchema} from "./post-schema";
 
 export const userSchema = new mongoose.Schema<UsersCollectionType>({
     id: String,
@@ -48,11 +47,7 @@ export const refreshTokensMetaSchema = new mongoose.Schema<RefreshTokensMetaType
     deviceName: String,
     userId: String
 });
-postSchema.virtual('reactions', {
-    ref: 'reactions',
-    localField: 'id',
-    foreignField: 'entityId'
-});
+
 export const reactionSchema = new mongoose.Schema<ReactionsCollectionType>({
     id: String,
     entityId: mongoose.Schema.Types.String,//{ type: Schema.Types.String, ref: 'comments' },
